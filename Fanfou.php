@@ -181,8 +181,8 @@ class Fanfou {
             return;
         }
 
-        $this->snoop = &new Snoopy;
-        $this->snoop->agent = $this->snoop_options['agent'];
+        $this->snoop             = @ &new Snoopy;
+        $this->snoop->agent      = $this->snoop_options['agent'];
         $this->snoop->rawheaders = array(
             'X-Twitter-Client'         => $this->snoop_options['client'],
             'X-Twitter-Client-Version' => $this->snoop_options['version'],

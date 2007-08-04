@@ -1,4 +1,4 @@
-Fanfou Tools for WordPress v1.0b7
+Fanfou Tools for WordPress v1.00
 =================================
 Copyright © 2007 Verdana Mu
 Homepage: http://www.phpvim.net

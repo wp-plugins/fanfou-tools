@@ -3,7 +3,7 @@
 Plugin Name: FanFou Tools
 Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools.html
 Description: FanFou Tools for WordPress Blog...<a href="options-general.php?page=fanfou-tools.php">Configuration Page</a>.
-Version: 1.00-stable
+Version: 1.00
 Author: Verdana Mu <verdana.cn@gmail.com>
 Author URI: http://www.phpvim.net
 License: LGPL
