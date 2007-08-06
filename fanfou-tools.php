@@ -555,8 +555,8 @@ function fanfou_notify_post($post_id = 0) {
         return;
     }
 
-    $post       = get_post($post_id);
-    $permalink  = get_permalink($post_id);
+    $post      = get_post($post_id);
+    $permalink = get_permalink($post_id);
 
     // Use TinyURL?
     if ($fanfou->notify_use_tinyurl == 1) {
