@@ -7,7 +7,9 @@ Stable tag: 1.01
 
 The fanfou-tools plugin allow you to display a list of your fanfou status.
 
+
 == Description ==
+
 
 == Installation ==
 
@@ -19,9 +21,22 @@ eg: wp-content/plugins/fanfou-tools/.
 Then active this plugin in your wordpress plugins management page.
 
 
+== Frequently Asked Questions ==
+
+= Anything else? =
+
+That about does it - enjoy!
+
+-- Verdana Mu
+
+http://www.phpvim.net/
+
+
 == Feedback ==
 
 For feedback, questions and any comments:
 
 - E-mail:    verdana.cn@gmail.com
-- Homepage:  http://www.phpvim.net/articles/fanfou-tools
+- Homepage:  http://www.phpvim.net/archives/fanfou-tools
+
+
