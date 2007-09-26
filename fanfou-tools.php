@@ -1,9 +1,9 @@
 <?php
 /**
 Plugin Name: FanFou Tools
-Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools.html
+Plugin URI: http://www.phpvim.net/archives/fanfou-tools
 Description: FanFou Tools for WordPress Blog...<a href="options-general.php?page=fanfou-tools.php">Configuration Page</a>.
-Version: 1.00
+Version: 1.01
 Author: Verdana Mu <verdana.cn@gmail.com>
 Author URI: http://www.phpvim.net
 License: LGPL
@@ -25,13 +25,12 @@ License: LGPL
 // **********************************************************************
 
 
-define('FANFOU_TOOLS_VER',         '1.00-stable');
+define('FANFOU_TOOLS_VER',         '1.01');
 
 require_once ABSPATH . PLUGINDIR . '/fanfou-tools/Fanfou.php';
 require_once ABSPATH . PLUGINDIR . '/fanfou-tools/FanfouPost.php';
 
 $fanfou = new Fanfou();
-
 
 load_plugin_textdomain('fanfou-tools', 'wp-content/plugins/fanfou-tools');
 
