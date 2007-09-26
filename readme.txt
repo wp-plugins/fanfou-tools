@@ -1,6 +1,6 @@
 === Fanfou Tools ===
 Contributors: Verdana Mu
-Tags: fanfou, twitter, blog
+Tags: blog, twitter, fanfou
 Requires at least: 2.1
 Tested up to: 2.3
 Stable tag: 1.01
@@ -29,7 +29,7 @@ That about does it - enjoy!
 
 -- Verdana Mu
 
-http://www.phpvim.net/
+http://www.phpvim.net
 
 
 == Feedback ==
