@@ -1,7 +1,7 @@
 === Fanfou Tools ===
 Contributors: Verdana Mu
 Tags: fanfou, twitter, blog
-Requires at least: 2.x
+Requires at least: 2.1
 Tested up to: 2.3
 Stable tag: 1.01
 
@@ -22,6 +22,6 @@ Then active this plugin in your wordpress plugins management page.
 == Feedback ==
 
 For feedback, questions and any comments:
-- E-mail    verdana.cn@gmail.com
-- Homepage  http://www.phpvim.net/articles/fanfou-tools
 
+- E-mail:    verdana.cn@gmail.com
+- Homepage:  http://www.phpvim.net/articles/fanfou-tools
