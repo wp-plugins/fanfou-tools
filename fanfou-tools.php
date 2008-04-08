@@ -1,9 +1,9 @@
 <?php
 /**
 Plugin Name: FanFou Tools
-Plugin URI: http://www.phpvim.net/archives/fanfou-tools
+Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools
 Description: FanFou Tools for WordPress Blog...<a href="options-general.php?page=fanfou-tools.php">Configuration Page</a>.
-Version: 1.00
+Version: 1.01
 Author: Verdana Mu <verdana.cn@gmail.com>
 Author URI: http://www.phpvim.net
 License: LGPL
@@ -25,7 +25,7 @@ License: LGPL
 // **********************************************************************
 
 
-define('FANFOU_TOOLS_VER',         '1.00');
+define('FANFOU_TOOLS_VER',         '1.01');
 
 require_once ABSPATH . PLUGINDIR . '/fanfou-tools/Fanfou.php';
 require_once ABSPATH . PLUGINDIR . '/fanfou-tools/FanfouPost.php';
@@ -34,8 +34,6 @@ $fanfou = new Fanfou();
 
 load_plugin_textdomain('fanfou-tools', 'wp-content/plugins/fanfou-tools');
 
-
-// {{{ fanfou_menu_items()
 
 /**
  * fanfou_menu_items
@@ -76,10 +74,6 @@ function fanfou_menu_items() {
 }
 add_action('admin_menu', 'fanfou_menu_items');
 
-// }}}
-
-
-// {{{ fanfou_init()
 
 /**
  * fanfou_init
@@ -110,10 +104,6 @@ function fanfou_init() {
 }
 add_action('init', 'fanfou_init');
 
-// }}}
-
-
-// {{{ fanfou_head_admin()
 
 /**
  * fanfou_head_admin
@@ -126,10 +116,6 @@ function fanfou_head_admin() {
 }
 add_action('admin_head', 'fanfou_head_admin');
 
-// }}}
-
-
-// {{{ fanfou_request_handler()
 
 /**
  * fanfou_request_handler
@@ -263,10 +249,6 @@ function timeLeftCounter() {
 }
 add_action('init', 'fanfou_request_handler', 10);
 
-// }}}
-
-
-// {{{ fanfou_post_form()
 
 /**
  * fanfou_post_form
@@ -309,10 +291,6 @@ function fanfou_post_form() {
     return $output;
 }
 
-// }}}
-
-
-// {{{ fanfou_write_post_form()
 
 /**
  * fanfou_write_post_form
@@ -348,10 +326,6 @@ function fanfou_write_post_form() {
     ');
 }
 
-// }}}
-
-
-// {{{ fanfou_options_form()
 
 /**
  * fanfou_options_form
@@ -536,10 +510,6 @@ function fanfou_options_form() {
     ');
 }
 
-// }}}
-
-
-// {{{ fanfou_notify_post($post_id = 0)
 
 /**
  * fanfou_notify_post
@@ -570,10 +540,6 @@ function fanfou_notify_post($post_id = 0) {
 }
 add_action('publish_post', 'fanfou_notify_post');
 
-// }}}
-
-
-// {{{ fanfou_manage_posts()
 
 /**
  * fanfou_manage_posts
@@ -689,10 +655,6 @@ function fanfou_manage_posts() {
 ';
 }
 
-// }}}
-
-
-// {{{ fanfou_update_posts()
 
 /**
  * fanfou_update_posts
@@ -735,10 +697,6 @@ function fanfou_update_posts() {
     update_option('fanfou_last_download', time());
 }
 
-// }}}
-
-
-// {{{ fanfou_get_posts($sort, $sort_order, $limit)
 
 /**
  * fanfou_get_posts
@@ -760,10 +718,6 @@ function fanfou_get_posts($sort, $sort_order, $limit) {
     return $wpdb->get_results($query);
 }
 
-// }}}
-
-
-// {{{ fanfou_list_posts($args)
 
 /**
  * fanfou_list_posts
@@ -846,10 +800,6 @@ function fanfou_list_posts($args = '') {
         return $output;
 }
 
-// }}}
-
-
-// {{{ fanfou_list_friends($args)
 
 /**
  * fanfou_list_friends
@@ -913,10 +863,6 @@ function fanfou_list_friends($args = '') {
 
 }
 
-// }}}
-
-
-// {{{ fanfou_init_widget()
 
 /**
  * fanfou_init_widget
@@ -1075,11 +1021,9 @@ function fanfou_init_widget() {
     register_widget_control('Fanfou Friends', 'wp_widget_fanfou_friends_control');
 }
 
+
 // Delay plugin execution to ensure Dynamic Sidebar has a chance to load first
 add_action('plugins_loaded', 'fanfou_init_widget');
-
-// }}}
-
 
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
