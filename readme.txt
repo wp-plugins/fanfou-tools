@@ -2,8 +2,8 @@
 Contributors: Verdana Mu
 Tags: blog, twitter, fanfou
 Requires at least: 2.1
-Tested up to: 2.3
-Stable tag: 1.00
+Tested up to: 2.6-bleeding2
+Stable tag: 1.01
 
 The fanfou-tools plugin allow you to display a list of your fanfou status.
 
@@ -37,6 +37,6 @@ http://www.phpvim.net
 For feedback, questions and any comments:
 
 - E-mail:    verdana.cn@gmail.com
-- Homepage:  http://www.phpvim.net/archives/fanfou-tools
+- Homepage:  http://www.phpvim.net/wordpress/fanfou-tools.html
 
 
