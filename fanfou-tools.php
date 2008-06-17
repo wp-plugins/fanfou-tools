@@ -1,7 +1,7 @@
 <?php
 /**
 Plugin Name: FanFou Tools
-Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools
+Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools.html
 Description: FanFou Tools for WordPress Blog...<a href="options-general.php?page=fanfou-tools.php">Configuration Page</a>.
 Version: 1.01
 Author: Verdana Mu <verdana.cn@gmail.com>
@@ -34,6 +34,26 @@ $fanfou = new Fanfou();
 
 load_plugin_textdomain('fanfou-tools', 'wp-content/plugins/fanfou-tools');
 
+
+/**
+ * FanfouTools
+ *
+ * @package Fanfou-Tools
+ * @version $Revision$
+ * @copyright Copyright (C) 2008
+ * @author Verdana Mu
+ */
+class FanfouTools
+{
+    /**
+     * init
+     *
+     * @return void
+     */
+    public function init()
+    {
+    }
+}
 
 /**
  * fanfou_menu_items
