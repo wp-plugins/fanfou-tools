@@ -207,14 +207,17 @@ class Fanfou {
     function install_table() {
         global $wpdb;
         $result = $wpdb->query("
-            CREATE TABLE `$wpdb->fanfou` (
-                `id`                INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-                `fanfou_id`         VARCHAR(255) NOT NULL ,
-                `fanfou_text`       VARCHAR(255) NOT NULL ,
-                `fanfou_created_at` INT(10) NOT NULL ,
-                `modified`          INT(10) NOT NULL ,
-                INDEX (`fanfou_id`)
-            )
+
+CREATE TABLE IF NOT EXISTS `$wpdb->fanfou` (
+  `id`                  int(11)         NOT NULL AUTO_INCREMENT,
+  `fanfou_id`           varchar(255)    NOT NULL,
+  `fanfou_text`         varchar(255)    NOT NULL,
+  `fanfou_created_at`   int(10)         NOT NULL,
+  `modified`            int(10)         NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fanfou_id` (`fanfou_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
         ");
     }
 
