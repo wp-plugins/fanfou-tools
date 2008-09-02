@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: fanfou-tools 1.00-stable\n"
+"Project-Id-Version: fanfou-tools 2.0a\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2007-07-31 16:50+0800\n"
 "Last-Translator: Verdana Mu <verdana.cn@gmail.com>\n"
@@ -141,7 +141,7 @@ msgid "Time interval for updating new posts:"
 msgstr "更新消息的时间间隔："
 
 #: fanfou-tools.php:492
-msgid "Update Options"
+msgid "Save Changes"
 msgstr "更新选项"
 
 #: fanfou-tools.php:498

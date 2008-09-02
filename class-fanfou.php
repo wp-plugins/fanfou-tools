@@ -30,8 +30,12 @@ if (!class_exists('Services_JSON')) {
  * @author Verdana Mu <verdana.cn@gmail.com>
  * @license LGPL license {@link http://www.gnu.org/licenses/lgpl.txt}
  */
-class Fanfou {
+class Fanfou
+{
     // {{{ Properties
+
+    /** Location for overloaded data **/
+    private $data = array();
 
     /**
      * json
@@ -57,90 +61,10 @@ class Fanfou {
      */
     var $snoop_options = array(
         'agent'      => 'Fanfou Tools - http://www.phpvim.net',
-        'version'    => '1.0b5',
+        'version'    => '1.2.3',
         'client'     => 'Fanfou Tools',
         'client-url' => 'http://www.phpvim.net/wordpress/fanfou-tools.html',
     );
-
-    /**
-     * username
-     *
-     * @var mixed
-     * @access public
-     */
-    var $username;
-
-    /**
-     * password
-     *
-     * @var mixed
-     * @access public
-     */
-    var $password;
-
-    /**
-     * notify_fanfou
-     *
-     * @var integer
-     * @access public
-     */
-    var $notify_fanfou;
-
-    /**
-     * notify_format
-     *
-     * @var mixed
-     * @access public
-     */
-    var $notify_format;
-
-    /**
-     * notify_use_tinyurl
-     *
-     * @var mixed
-     * @access public
-     */
-    var $notify_use_tinyurl;
-
-    /**
-     * date_format
-     *
-     * @var mixed
-     * @access public
-     */
-    var $date_format;
-
-    /**
-     * sidebar_status_num
-     *
-     * @var integer
-     * @access public
-     */
-    var $sidebar_status_num;
-
-    /**
-     * sidebar_friends_num
-     *
-     * @var mixed
-     * @access public
-     */
-    var $sidebar_friends_num;
-
-    /**
-     * download_interval
-     *
-     * @var integer
-     * @access public
-     */
-    var $download_interval;
-
-    /**
-     * last_down
-     *
-     * @var integer
-     * @access public
-     */
-    var $last_download;
 
     // }}}
 
@@ -204,8 +128,12 @@ class Fanfou {
      * @access public
      * @return void
      */
-    function install_table() {
+    function install_table()
+    {
         global $wpdb;
+
+        $char   = $wpdb->get_var("SELECT @@character_set_database");
+        $engine = $wpdb->get_var("SELECT @@storage_engine");
         $result = $wpdb->query("
 
 CREATE TABLE IF NOT EXISTS `$wpdb->fanfou` (
@@ -216,7 +144,7 @@ CREATE TABLE IF NOT EXISTS `$wpdb->fanfou` (
   `modified`            int(10)         NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fanfou_id` (`fanfou_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+) ENGINE=$engine DEFAULT CHARSET=$char AUTO_INCREMENT=1;
 
         ");
     }
@@ -452,6 +380,7 @@ CREATE TABLE IF NOT EXISTS `$wpdb->fanfou` (
         $this->sidebar_friends_num = (int) get_option('fanfou_sidebar_friends_num');
         $this->download_interval   = (int) get_option('fanfou_download_interval');
         $this->last_download       = (int) get_option('fanfou_last_download');
+        $this->bloginfo_wpurl      = get_bloginfo('wpurl');
     }
 
     // }}}
@@ -485,6 +414,45 @@ CREATE TABLE IF NOT EXISTS `$wpdb->fanfou` (
         update_option('fanfou_sidebar_status_num',  $this->sidebar_status_num);
         update_option('fanfou_sidebar_friends_num', $this->sidebar_friends_num);
         update_option('fanfou_download_interval',   $this->download_interval);
+    }
+
+    // }}}
+
+
+    // {{{ Overloaded functions
+
+    /**
+     * __set
+     *
+     * @param mixed $name
+     * @param mixed $value
+     * @return void
+     */
+    public function __set($name, $value)
+    {
+        $this->data[$name] = $value;
+    }
+
+
+    /**
+     * __get
+     *
+     * @param mixed $name
+     * @return void
+     */
+    public function __get($name)
+    {
+        if (array_key_exists($name, $this->data)) {
+            return $this->data[$name];
+        }
+
+        $trace = debug_backtrace();
+        trigger_error(
+            'Undefined property via __get(): ' . $name .
+            ' in ' . $trace[0]['file'] .
+            ' on line ' . $trace[0]['line'],
+            E_USER_NOTICE);
+        return null;
     }
 
     // }}}

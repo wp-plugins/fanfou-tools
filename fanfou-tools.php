@@ -3,7 +3,7 @@
 Plugin Name: FanFou Tools
 Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools.html
 Description: FanFou Tools for WordPress Blog...<a href="options-general.php?page=fanfou-tools.php">Configuration Page</a>.
-Version: 1.0.2
+Version: 2.0a
 Author: Verdana Mu <verdana.cn@gmail.com>
 Author URI: http://www.phpvim.net
 License: LGPL
@@ -25,10 +25,10 @@ License: LGPL
 // **********************************************************************
 
 
-define('FANFOU_TOOLS_VER',         '1.0.2');
+define('FANFOU_TOOLS_VER',         '2.0a');
 
-require_once ABSPATH . PLUGINDIR . '/fanfou-tools/Fanfou.php';
-require_once ABSPATH . PLUGINDIR . '/fanfou-tools/FanfouPost.php';
+require_once ABSPATH . PLUGINDIR . '/fanfou-tools/class-fanfou.php';
+require_once ABSPATH . PLUGINDIR . '/fanfou-tools/class-post.php';
 
 $fanfou = new Fanfou();
 
@@ -36,63 +36,33 @@ load_plugin_textdomain('fanfou-tools', 'wp-content/plugins/fanfou-tools');
 
 
 /**
- * FanfouTools
+ * _f
  *
- * @package Fanfou-Tools
- * @version $Revision$
- * @copyright Copyright (C) 2008
- * @author Verdana Mu
+ * @param mixed $key
+ * @access protected
+ * @return void
  */
-class FanfouTools
-{
-    /**
-     * init
-     *
-     * @return void
-     */
-    public function init()
-    {
+function _f($key) {
+    if (!function_exists('__')) {
+        return $key;
     }
+
+    return __($key, 'fanfou-tools');
 }
 
+
 /**
- * fanfou_menu_items
+ * fanfou_add_menu
  *
  * @access public
  * @return void
  */
-function fanfou_menu_items() {
-    if (current_user_can('manage_options')) {
-        $optitle = __('Fanfou Tools', 'fanfou-tools');
-        add_options_page(
-            $optitle,
-            $optitle,
-            10,
-            basename(__FILE__),
-            'fanfou_options_form'
-        );
-
-        add_management_page(
-            __('Manage Fanfou Posts', 'fanfou-tools'),
-            __('Fanfou Posts', 'fanfou-tools'),
-            10,
-            basename(__FILE__),
-            'fanfou_manage_posts');
-    }
-
-    if (current_user_can('publish_posts')) {
-        $post_title = __('Write fanfou', 'fanfou-tools');
-        add_submenu_page(
-            'post-new.php',
-            $post_title,
-            $post_title,
-            10,
-            basename(__FILE__),
-            'fanfou_write_post_form'
-        );
-    }
+function fanfou_add_menu() {
+    // Options page
+    $title = _f("Fanfou Tools");
+    add_options_page($title, $title, 10, basename(__FILE__), 'fanfou_options_form');
 }
-add_action('admin_menu', 'fanfou_menu_items');
+add_action('admin_menu', 'fanfou_add_menu');
 
 
 /**
@@ -109,7 +79,6 @@ function fanfou_init() {
         if (!in_array($wpdb->fanfou, $tables)) {
             $fanfou->install_table();
         }
-
         $fanfou->install_options();
     }
     $fanfou->get_settings();
@@ -119,8 +88,8 @@ function fanfou_init() {
     }
 
     if (is_admin()) {
-		wp_enqueue_script('prototype');
-	}
+        wp_enqueue_script('prototype');
+    }
 }
 add_action('init', 'fanfou_init');
 
@@ -132,7 +101,7 @@ add_action('init', 'fanfou_init');
  * @return void
  */
 function fanfou_head_admin() {
-    print("\n<script type=\"text/javascript\" src=\"".get_bloginfo('wpurl')."/index.php?fanfou_action=fanfou_js_admin\"></script>");
+    print("\n<script type=\"text/javascript\" src=\"".get_bloginfo('wpurl')."/index.php?fanfou_action=fanfou_js_code\"></script>");
 }
 add_action('admin_head', 'fanfou_head_admin');
 
@@ -151,12 +120,13 @@ function fanfou_request_handler() {
         case 'fanfou_update_posts':
             fanfou_update_posts();
             header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&fanfou-updated=true');
-            exit;
             break;
 
-        case 'fanfou_js_admin':
+        case 'fanfou_js_code':
             header('Content-type: text/javascript');
-?>
+// {{{ EOF fanfou_js_code
+            $curTime = time();
+            echo <<<EOF
 function TestLogin() {
     var username = encodeURIComponent($('ff_username').value);
     var password = encodeURIComponent($('ff_password').value);
@@ -167,7 +137,7 @@ function TestLogin() {
     var params = "fanfou_action=fanfou_login_test&ff_username=" + username + "&ff_password=" + password;
     var myAjax = new Ajax.Updater(
         result,
-        "<?php bloginfo('wpurl'); ?>/wp-admin/options-general.php", {
+        "{$fanfou->bloginfo_wpurl}/wp-admin/options-general.php", {
             method: 'post',
             parameters: params,
             onComplete: TestLoginResult
@@ -186,7 +156,7 @@ function DeleteFanfouStatus(id, fanfou_id, message) {
 
     var params = "page=fanfou-tools.php&fanfou_action=fanfou_delete_post&id=" + id + "&fanfou_id=" + fanfou_id;
     var myAjax = new Ajax.Request(
-        '<?php bloginfo('wpurl'); ?>/wp-admin/edit.php', {
+        '{$fanfou->bloginfo_wpurl}/wp-admin/edit.php', {
             method: 'post',
             parameters: params,
             onLoading: function (transport) { showLoading(id, transport); },
@@ -210,7 +180,7 @@ function showResponse(id, transport) {
     return false;
 }
 
-var seconds = <?php echo ($fanfou->last_download + $fanfou->download_interval - time()); ?>;
+var seconds = $fanfou->last_download + $fanfou->download_interval - $curTime;
 function timeLeftCounter() {
     seconds = seconds - 1;
     if (seconds < 0) {
@@ -220,9 +190,8 @@ function timeLeftCounter() {
     $('time_left').innerHTML = '( ' + seconds + ' seconds left )';
     window.setTimeout(timeLeftCounter, 1000);
 }
-
-<?php
-            exit;
+EOF;
+// }}}
             break;
 
         case 'fanfou_delete_friend':
@@ -230,7 +199,10 @@ function timeLeftCounter() {
             $fanfou->delete_friend($user_id);
             header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&fanfou-delete-friend=true&user_id=' . $user_id);
             exit;
+        default:
+            break;
         }
+        exit;
     }
 
     if (!empty($_POST['fanfou_action'])) {
@@ -239,10 +211,10 @@ function timeLeftCounter() {
             $username = trim(stripslashes($_POST['ff_username']));
             $password = trim(stripslashes($_POST['ff_password']));
             if ($fanfou->login($username, $password)) {
-                exit(__('User successfully authenticated...', 'fanfou-tools'));
+                exit(_f('<em style="color: green">User successfully authenticated...</em>'));
             }
             else {
-                exit(__('Login failed. Please check your user name and password and try again...', 'fanfou-tools'));
+                exit(_f('<em style="color: red">Login failed. Please check your user name and password and try again...</em>'));
             }
             break;
 
@@ -252,7 +224,7 @@ function timeLeftCounter() {
                 header('Location: '.get_bloginfo('wpurl').'/wp-admin/post-new.php?page=fanfou-tools.php&fanfou-posted=true');
             }
             else {
-                wp_die(__('Oops, your fanfou status was not posted. Please check your username and password.', 'fanfou-tools'));
+                wp_die(_f('Oops, your fanfou status was not posted. Please check your username and password.'));
             }
 
             exit;
@@ -285,22 +257,22 @@ function fanfou_post_form() {
             <p><textarea type="text" cols="60" rows="5" maxlength="140" id="fanfou_status_text" name="fanfou_status_text" onkeyup="fanfouCharCount();"></textarea></p>
             <input type="hidden" name="fanfou_action" value="fanfou_post_admin" />
             <script type="text/javascript">
-            //<![CDATA[
-            function fanfouCharCount() {
-                var count = document.getElementById("fanfou_status_text").value.length;
-                if (count > 0) {
-                    document.getElementById("fanfou_char_count").innerHTML = (140 - count) + "'.__(' characters remaining', 'fanfou-tools').'";
-                }
-                else {
-                    document.getElementById("fanfou_char_count").innerHTML = "";
-                }
-            }
-            setTimeout("fanfouCharCount();", 500);
-            document.getElementById("fanfou_post_form").setAttribute("autocomplete", "off");
-            //]]>
+//<![CDATA[
+function fanfouCharCount() {
+    var count = document.getElementById("fanfou_status_text").value.length;
+    if (count > 0) {
+        document.getElementById("fanfou_char_count").innerHTML = (140 - count) + "'._f(' characters remaining').'";
+    }
+    else {
+        document.getElementById("fanfou_char_count").innerHTML = "";
+    }
+    }
+    setTimeout("fanfouCharCount();", 500);
+    document.getElementById("fanfou_post_form").setAttribute("autocomplete", "off");
+    //]]>
             </script>
             <p>
-                <input type="submit" id="fanfou_submit" name="fanfou_submit" value="'.__('Post Fanfou Status!', 'fanfou-tools').'" />
+                <input type="submit" id="fanfou_submit" name="fanfou_submit" value="'._f('Post Fanfou Status!').'" />
                 <span id="fanfou_char_count"></span>
             </p>
             <div class="clear"></div>
@@ -323,23 +295,23 @@ function fanfou_write_post_form() {
     if ($_GET['fanfou-posted']) {
         print('
             <div id="message" class="updated fade">
-                <p>'.__('Fanfou posted.', 'fanfou-tools').'</p>
+                <p>'._f('Fanfou posted.').'</p>
             </div>
         ');
     }
 
     if (empty($fanfou->username) or empty($fanfou->password)) {
         print('
-            <p>' . __('Please enter your <a href="http://fanfou.com">Fanfou</a> account information in your <a href="options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a>.', 'fanfou-tools') . '</p>
+            <p>' . _f('Please enter your <a href="http://fanfou.com">Fanfou</a> account information in your <a href="options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '</p>
         ');
     }
 
     print('
         <div class="wrap">
-            <h2>' . __('Write Fanfou', 'fanfou-tools') . '</h2>
+            <h2>' . _f('Write Fanfou') . '</h2>
             <p>
-                ' . __('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">Fanfou</a> using the account information in your <a href="options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a>.', 'fanfou-tools') . '<br/>
-                ' . __('You can use the UBBCode <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.', 'fanfou-tools') . '
+                ' . _f('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">Fanfou</a> using the account information in your <a href="options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '<br/>
+                ' . _f('You can use the UBBCode <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.') . '
             </p>
             '.fanfou_post_form().'
         </div>
@@ -361,26 +333,26 @@ function fanfou_options_form() {
         $fanfou->save_settings();
         print('
             <div id="message" class="updated fade">
-                <p>'.__('Options updated...', 'fanfou-tools').'</p>
+                <p>'._f('Options updated...').'</p>
             </div>
         ');
     }
 
     // Update fanfou status
     if ( $_GET['fanfou-updated'] ) {
-		print('
-			<div id="message" class="updated fade">
-				<p>'.__('Fanfou status updated.', 'fanfou-tools').'</p>
-			</div>
-		');
-	}
+        print('
+            <div id="message" class="updated fade">
+                <p>'._f('Fanfou status updated.').'</p>
+            </div>
+        ');
+    }
 
 
     // Delete friends
     if ($_GET['fanfou-delete-friend'] and $_GET['user_id']) {
         print('
             <div id="message" class="updated fade">
-                <p>'.__("Your Fanfou Friend <a href='http://fanfou.com/{$_GET['user_id']}' target='_blank'>{$_GET['user_id']}</a> has been deleted...", 'fanfou-tools').'</p>
+                <p>'._f("Your Fanfou Friend <a href='http://fanfou.com/{$_GET['user_id']}' target='_blank'>{$_GET['user_id']}</a> has been deleted...").'</p>
             </div>
         ');
     }
@@ -412,23 +384,24 @@ function fanfou_options_form() {
         <h2>Fanfou Tools v' . FANFOU_TOOLS_VER . '</h2>
         <form id="fanfou-tools" name="fanfou-tools" action="'.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php" method="post">
             <input type="hidden" id="fanfou_action" name="fanfou_action" value="update_settings" />
-            <p>' . __('For information and updates, please visit:', 'fanfou-tools') . '<br/>
-            <a href="http://www.phpvim.net/wordpress/fanfou-tools.html" target="_blank">http://www.phpvim.net/wordpress/fanfou-tools.html</a></p>
+            <p>' . _f('For information and updates, please visit:') . '<br/>
+                <a href="http://www.phpvim.net/wordpress/fanfou-tools.html" target="_blank">http://www.phpvim.net/wordpress/fanfou-tools.html</a>
+            </p>
 
             <fieldset class="options">
-            <legend>' . __('The Login Information', 'fanfou-tools') . '</legend>
+            <legend>' . _f('The Login Information') . '</legend>
             <table style="padding-left: 20px" width="100%" border="0">
                 <tr>
-                    <td width="20%" align="right">'.__('FanFou ID or Email:', 'fanfou-tools').'</td>
+                    <td width="20%" align="right">'._f('FanFou ID or Email:').'</td>
                     <td width="80%"><input type="text" size="25" name="ff_username" id="ff_username" value="'.$fanfou->username.'" /></td>
                 </tr>
                 <tr>
-                    <td align="right">'.__('FanFou Password:', 'fanfou-tools').'</td>
+                    <td align="right">'._f('FanFou Password:').'</td>
                     <td><input type="password" size="25" name="ff_password" id="ff_password" value="'.$fanfou->password.'" /></td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input type="button" onclick="TestLogin(); return false;" value="'.__('Test Login', 'fanfou-tools').' &raquo;" id="login_test" name="login_test"/>
+                        <input type="button" onclick="TestLogin(); return false;" value="'._f('Test Login').' &raquo;" id="login_test" name="login_test"/>
                         &nbsp;
                         <span id="fanfou_login_test_result"></span>
                     </td>
@@ -437,44 +410,44 @@ function fanfou_options_form() {
             </fieldset>
 
             <fieldset class="options">
-            <legend>' . __('Configuration', 'fanfou-tools') . '</legend>
+            <legend>' . _f('Configuration') . '</legend>
             <div style="padding-left: 20px">
                 <p>
                     <input type="checkbox" name="ff_notify_fanfou" id="ff_notify_fanfou" value="1" '.$fanfou_notify_fanfou.' />
-                    ' . __('Create a fanfou status when you publish a new blog post?', 'fanfou-tools') . '
+                    ' . _f('Create a fanfou status when you publish a new blog post?') . '
                 </p>
 
                 <p>
                     <input type="checkbox" name="ff_notify_use_tinyurl" id="ff_notify_use_tinyurl" value="1" '.$fanfou_notify_use_tinyurl.' />
-                    ' . __('Shorten the long permalink into a Tiny URL?', 'fanfou-tools') . '
+                    ' . _f('Shorten the long permalink into a Tiny URL?') . '
                     <br/>
-                    <em style="font:normal 10px verdana; color: gray;">' . __('Using this option will slow down your blog post action.', 'fanfou-tools') . '</em>
+                    <em style="font:normal 10px verdana; color: gray;">' . _f('Using this option will slow down your blog post action.') . '</em>
                 </p>
 
                 <p>
-                    ' . __('Format for notifier when publish a new blog post:', 'fanfou-tools') . '
+                    ' . _f('Format for notifier when publish a new blog post:') . '
                     <input type="text" name="ff_notify_format" id="ff_notify_format" value="'.$fanfou->notify_format.'" size="25" />
                 </p>
 
                 <p>
-                    ' . __('Format for the datetime of fanfou status:', 'fanfou-tools') . '
+                    ' . _f('Format for the datetime of fanfou status:') . '
                     <input type="text" name="ff_date_format" id="ff_date_format" value="'.$fanfou->date_format.'" size="25" />
                     <br/>
-                    <em style="font:normal 10px verdana; color: gray;">' . __('The dates was formatted by <a target="_blank" href="http://www.php.net/manual/en/function.date.php"><strong>date()</strong></a>', 'fanfou-tools') . '</em>.
+                    <em style="font:normal 10px verdana; color: gray;">' . _f('The dates was formatted by <a target="_blank" href="http://www.php.net/manual/en/function.date.php"><strong>date()</strong></a>') . '</em>.
                 </p>
 
                 <p>
-                    ' . __('Fanfou status to show in sidebar:', 'fanfou-tools') . '
+                    ' . _f('Fanfou status to show in sidebar:') . '
                     <input type="text" name="ff_sidebar_status_num" id="ff_sidebar_status_num" value="'.$fanfou->sidebar_status_num.'" size="6" />
                 </p>
 
                 <p>
-                    ' . __('Your Fanfou friends to show in sidebar:', 'fanfou-tools') . '
+                    ' . _f('Your Fanfou friends to show in sidebar:') . '
                     <input type="text" name="ff_sidebar_friends_num" id="ff_sidebar_friends_num" value="'.$fanfou->sidebar_friends_num.'" size="6" />
                 </p>
 
                 <p>
-                    ' . __('Time interval for updating new posts:', 'fanfou-tools') . '
+                    ' . _f('Time interval for updating new posts:') . '
                     <input type="text" name="ff_download_interval" id="ff_download_interval" value="'.$fanfou->download_interval.'" size="6" /> seconds
                 </p>
 
@@ -482,47 +455,48 @@ function fanfou_options_form() {
             </fieldset>
 
             <div class="submit">
-                <input type="submit" name="submit" value="'.__('Update Options', 'fanfou-tools').' &raquo;" />
+                <input type="submit" name="submit" value="'._f('Save Changes').' &raquo;" />
             </div>
             </fieldset>
         </form>
 
         <fieldset class="options">
-        <legend>' . __('Your Top 10 Newest Fanfou Friends', 'fanfou-tools') . '</legend>
+        <legend>' . _f('Your Top 10 Newest Fanfou Friends') . '</legend>
             <ol style="list-style-type: none">
             '.$friends_htmlcode.'
             </ol>
 
-            <a href="http://fanfou.com/friends" target="_blank">' . __('Find more friends...', 'fanfou-tools') . '</a>
+            <a href="http://fanfou.com/friends" target="_blank">' . _f('Find more friends...') . '</a>
         </fieldset>
 
         <fieldset class="options">
-        <legend>' . __('Manage or Write Your Fanfou Status', 'fanfou-tools') . '</legend>
+        <legend>' . _f('Manage or Write Your Fanfou Status') . '</legend>
             <ul>
-                <li><a href="'.get_bloginfo('wpurl').'/wp-admin/edit.php?page=fanfou-tools.php">'.__('Manage Your Fanfou Status', 'fanfou-tools').'</a>
-                <li><a href="'.get_bloginfo('wpurl').'/wp-admin/post-new.php?page=fanfou-tools.php">'.__('Write a New Fanfou Status', 'fanfou-tools').'</a>
+                <li><a href="'.get_bloginfo('wpurl').'/wp-admin/edit.php?page=fanfou-tools.php">'._f('Manage Your Fanfou Status').'</a>
+                <li><a href="'.get_bloginfo('wpurl').'/wp-admin/post-new.php?page=fanfou-tools.php">'._f('Write a New Fanfou Status').'</a>
             </u>
         </fieldset>
 
         <form method="get" action="'.get_bloginfo('wpurl').'/wp-admin/options-general.php" name="fanfou_update_posts">
 
             <fieldset class="options">
-            <legend>' . __('Synchronous Your Fanfou Status', 'fanfou-tools') . '</legend>
+            <legend>' . _f('Synchronous Your Fanfou Status') . '</legend>
 
                 <p style="padding-left: 20px">
-                ' . __('Use this button to manually update your fanfou status that show on your wordpress sidebar.', 'fanfou-tools') . '
+                ' . _f('Use this button to manually update your fanfou status that show on your wordpress sidebar.') . '
                 <br/><br/>
-                ' . __('Last sync time:', 'fanfou-tools') . ' <strong>'.date('Y-m-d H:i:s', $fanfou->last_download).'</strong>
+                ' . _f('Last sync time:') . ' <strong>'.date('Y-m-d H:i:s', $fanfou->last_download).'</strong>
                 <br/>
-                ' . __('Next sync time:', 'fanfou-tools') . ' <strong>'.date('Y-m-d H:i:s', $fanfou->last_download + $fanfou->download_interval).' <span id="time_left"></span> </strong>
+                ' . _f('Next sync time:') . ' <strong>'.date('Y-m-d H:i:s', $fanfou->last_download + $fanfou->download_interval).' <span id="time_left"></span> </strong>
                 </p>
-                <script type="text/javascript">
-                    window.setTimeout(timeLeftCounter, 1000);
-                </script>
+<script type="text/javascript">
+window.setTimeout(timeLeftCounter, 1000);
+</script>
             </fieldset>
 
             <div class="submit">
-                <input type="submit" name="submit" value="'.__('Synchronous Fanfou Status', 'fanfou-tools').' &raquo;" />
+                <input type="submit" name="submit" value="'._f('Synchronous Fanfou Status').' &raquo;" />
+                <input type="hidden" name="page" value="fanfou-tools.php" />
                 <input type="hidden" name="fanfou_action" value="fanfou_update_posts" />
             </div>
         </form>
@@ -553,7 +527,7 @@ function fanfou_notify_post($post_id = 0) {
         $permalink = TinyURL::transform($permalink);
     }
 
-    $text = sprintf(__($fanfou->notify_format, 'fanfou-tools'), $post->post_title, $permalink);
+    $text = sprintf(_f($fanfou->notify_format), $post->post_title, $permalink);
     $fanfou->post($text);
 
     add_post_meta($post_id, 'fanfou_marker', '1', true);
@@ -572,10 +546,10 @@ function fanfou_manage_posts() {
 
     // define the columns to display, the syntax is 'internal name' => 'display name'
     $posts_columns = array(
-        'id'         => '<div style="text-align: center">' . __('ID') . '</div>',
-        'fanfou_id'  => '<div style="text-align: center">' . __('Fanfou ID') . '</div>',
-        'date'       => __('When'),
-        'status'     => __('Status'),
+        'id'         => '<div style="text-align: center">' . _f('ID') . '</div>',
+        'fanfou_id'  => '<div style="text-align: center">' . _f('Fanfou ID') . '</div>',
+        'date'       => _f('When'),
+        'status'     => _f('Status'),
     );
 
     // you can not edit these at the moment
@@ -584,7 +558,7 @@ function fanfou_manage_posts() {
 
     print '
 <div class="wrap">
-<h2>' . __('Last 20 Fanfou Status', 'fanfou-tools') . ' &nbsp; - &nbsp; <a href="./options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a></h2>
+<h2>' . _f('Last 20 Fanfou Status') . ' &nbsp; - &nbsp; <a href="./options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a></h2>
 
 <br style="clear:both;" />
 
@@ -625,54 +599,54 @@ function fanfou_manage_posts() {
             case 'id':
             ?>
             <th scope="row" style="text-align: center"><?php echo $post->id; ?></th>
-            <?php
+<?php
                 break;
 
             case 'fanfou_id':
-            ?>
+?>
             <th scope="row" style="text-align: center"><?php echo $post->fanfou_id; ?></th>
-            <?php
+<?php
                 break;
 
             case 'date':
-            ?>
+?>
             <td><span class="datetime"><?php echo date('Y-m-d H:i:s', $post->fanfou_created_at); ?></span></td>
-            <?php
+<?php
                 break;
 
             case 'status':
-            ?>
+?>
             <td><span title="<?php echo $post->fanfou_text;?>"><?php if (strlen($post->fanfou_text) <= 60) echo $post->fanfou_text; else echo substr($post->fanfou_text, 0, 60) . ' ...'; ?></span></td>
-            <?php
+<?php
                 break;
 
             case 'control_view':
-            ?>
+?>
             <td><a href="http://fanfou.com/statuses/<?php echo $post->fanfou_id; ?>" target="_blank"><?php _e('View', 'fanfou-tools'); ?></a></td>
-            <?php
+<?php
                 break;
 
             case 'control_delete':
-            ?>
+?>
             <td><a href='edit.php?page=fanfou-tools.php&amp;fanfou_action=fanfou_delete&amp;id=<?php echo $post->fanfou_id;?>' onclick="return DeleteFanfouStatus('<?php echo $post->id;?>', '<?php echo $post->fanfou_id;?>', 'js_encode(<?php _e("You are about to delete this status.\n'OK' to delete, 'Cancel' to stop.", 'fanfou-tools');?>)'); return false;"><?php _e('Delete', 'fanfou-tools');?></a></td>
-            <?php
+<?php
                 break;
 
             default:
-            ?>
+?>
             <td><?php do_action('manage_posts_custom_column', $column_name, $id); ?></td>
-            <?php
+<?php
                 break;
             }
         }
     }
     }
     print '
-    </tbody>
-</table>
+        </tbody>
+        </table>
 
-</div>
-';
+        </div>
+        ';
 }
 
 
@@ -684,7 +658,7 @@ function fanfou_manage_posts() {
  */
 function fanfou_update_posts() {
     global $wpdb, $fanfou;
-    if (empty($fanfou->username) or empty($fanfou->password)) {
+    if (!$fanfou->username or !$fanfou->password) {
         exit;
     }
 
@@ -909,7 +883,7 @@ function fanfou_init_widget() {
     function wp_widget_fanfou($args) {
         extract($args);
         $options = get_option('widget_fanfou');
-        $title   = empty($options['status_title']) ? __('Fanfou Tools' ) : $options['status_title'];
+        $title   = empty($options['status_title']) ? _f('Fanfou Tools' ) : $options['status_title'];
 
         $only_onhome = (boolean) $options['status_only_onhome'];
         if ($only_onhome and !is_home()) {
@@ -942,7 +916,7 @@ function fanfou_init_widget() {
     function wp_widget_fanfou_friends($args) {
         extract($args);
         $options = get_option('widget_fanfou');
-        $title   = empty($options['friends_title']) ? __('Fanfou Friends' ) : $options['friends_title'];
+        $title   = empty($options['friends_title']) ? _f('Fanfou Friends' ) : $options['friends_title'];
 
         $only_onhome = (boolean) $options['friends_only_onhome'];
         if ($only_onhome and !is_home()) {
@@ -975,7 +949,7 @@ function fanfou_init_widget() {
      * @return void
      */
     function wp_widget_fanfou_control() {
-        print __("<p>You can config <strong>Fanfou Tools</strong> from: \n<br/><br/>\n", 'fanfou-tools');
+        print _f("<p>You can config <strong>Fanfou Tools</strong> from: \n<br/><br/>\n");
         print "<a href='".get_bloginfo('wpurl')."/wp-admin/options-general.php?page=fanfou-tools.php'>Fanfou Tools Options</a></p>\n";
         print "<br/><br/>\n";
 

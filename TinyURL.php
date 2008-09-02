@@ -23,7 +23,8 @@
  * @author Verdana Mu <verdana.cn@gmail.com>
  * @license PHP Version 3.0 {@link http://www.php.net/license/3_0.txt}
  */
-class TinyURL {
+class TinyURL
+{
     // {{{ transform($url)
 
     /**
@@ -33,7 +34,7 @@ class TinyURL {
      * @access public
      * @return void
      */
-    function transform($url) {
+    public function transform($url) {
         if (empty($url) or !preg_match('|^(?:http://)?([^/]+)|i', $url)) {
             return;
         }
@@ -47,6 +48,7 @@ class TinyURL {
 
     // }}}
 
+
     // {{{ revert($tinyurl)
 
     /**
@@ -56,7 +58,7 @@ class TinyURL {
      * @access public
      * @return void
      */
-    function revert($tinyurl) {
+    public function revert($tinyurl) {
         $url     = explode('.com/', $tinyurl);
         $url     = 'http://preview.tinyurl.com/' . $url[1];
         $preview = file_get_contents($url);
