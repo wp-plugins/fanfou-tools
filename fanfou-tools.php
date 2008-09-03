@@ -2,7 +2,7 @@
 /**
 Plugin Name: FanFou Tools
 Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools.html
-Description: FanFou Tools for WordPress Blog...<a href="options-general.php?page=fanfou-tools.php">Configuration Page</a>.
+Description: FanFou Tools for WordPress Blog...<a href="./admin.php?page=fanfou-tools.php">Configuration Page</a>.
 Version: 2.0a
 Author: Verdana Mu
 Author URI: http://www.phpvim.net
@@ -29,17 +29,18 @@ License: LGPL
 
 
 
-define('FANFOU_TOOLS_VER',         '2.0a');
+define('FANFOU_TOOLS_VER', '2.0a');
+define('FANFOU_PATH', ABSPATH . PLUGINDIR . '/fanfou-tools');
 
-require_once ABSPATH . PLUGINDIR . '/fanfou-tools/class-fanfou.php';
-require_once ABSPATH . PLUGINDIR . '/fanfou-tools/class-post.php';
-
+require_once FANFOU_PATH . '/class-fanfou.php';
+require_once FANFOU_PATH . '/class-post.php';
 $fanfou = new Fanfou();
 
 load_plugin_textdomain('fanfou-tools', 'wp-content/plugins/fanfou-tools');
 
 
 // {{{ function _f($key)
+
 /**
  * Translates $message using the `fanfou-tools` locale for $domain. Wrap text
  * strings that you are going to use in calculations with this function.
@@ -52,12 +53,13 @@ function _f($key) {
     if (!function_exists('__')) {
         return $key;
     }
-
     return __($key, 'fanfou-tools');
 }
+
 // }}}
 
 
+// {{{ fanfou_add_menu
 
 /**
  * fanfou_add_menu
@@ -68,10 +70,14 @@ function _f($key) {
 function fanfou_add_menu() {
     // Options page
     $title = _f("Fanfou Tools");
-    add_options_page($title, $title, 10, basename(__FILE__), 'fanfou_options_form');
+    add_options_page($title, $title, 10, basename(__FILE__), 'fanfou_admin');
 }
 add_action('admin_menu', 'fanfou_add_menu');
 
+// }}}
+
+
+// {{{ fanfou_init
 
 /**
  * fanfou_init
@@ -98,6 +104,10 @@ function fanfou_init() {
 }
 add_action('init', 'fanfou_init');
 
+// }}}
+
+
+// {{{ fanfou_head_admin
 
 /**
  * fanfou_head_admin
@@ -110,6 +120,10 @@ function fanfou_head_admin() {
 }
 add_action('admin_head', 'fanfou_head_admin');
 
+// }}}
+
+
+// {{{ fanfou_request_handler}
 
 /**
  * fanfou_request_handler
@@ -125,90 +139,25 @@ function fanfou_request_handler() {
         case 'fanfou_update_posts':
             remove_action('shutdown', 'fanfou_update_posts');
             fanfou_update_posts();
-            header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&fanfou-updated=true');
+            header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&fanfou-updated=true');
+            exit;
             break;
 
         case 'fanfou_js_code':
             header('Content-type: text/javascript');
-// {{{ EOF fanfou_js_code
-            $curTime = time();
-            echo <<<EOF
-function TestLogin() {
-    var username = encodeURIComponent($('ff_username').value);
-    var password = encodeURIComponent($('ff_password').value);
-
-    var result = $('fanfou_login_test_result');
-    result.innerHTML = 'Testing...';
-
-    var params = "fanfou_action=fanfou_login_test&ff_username=" + username + "&ff_password=" + password;
-    var myAjax = new Ajax.Updater(
-        result,
-        "{$fanfou->bloginfo_wpurl}/wp-admin/options-general.php", {
-            method: 'post',
-            parameters: params,
-            onComplete: TestLoginResult
-        }
-    );
-}
-
-function TestLoginResult() {
-    Fat.fade_element('fanfou_login_test_result');
-}
-
-function DeleteFanfouStatus(id, fanfou_id, message) {
-    if(!confirm(message)) {
-        return false;
-    }
-
-    var params = "page=fanfou-tools.php&fanfou_action=fanfou_delete_post&id=" + id + "&fanfou_id=" + fanfou_id;
-    var myAjax = new Ajax.Request(
-        '{$fanfou->bloginfo_wpurl}/wp-admin/edit.php', {
-            method: 'post',
-            parameters: params,
-            onLoading: function (transport) { showLoading(id, transport); },
-            onComplete: function (transport) { showResponse(id, transport); }
-        }
-    );
-
-    return false;
-}
-
-function showLoading(id, transport) {
-    // Hidden the deleted row
-    Fat.fade_element('post-' + id, null, 750);
-}
-
-function showResponse(id, transport) {
-    // Hidden the deleted row
-    Fat.fade_element('post-' + id, null, 750, '#FF3300');
-    var func = function () { $('post-'+id).hide(); }
-    setTimeout(func, 750);
-    return false;
-}
-
-var seconds = $fanfou->last_download + $fanfou->download_interval - $curTime;
-function timeLeftCounter() {
-    seconds = seconds - 1;
-    if (seconds < 0) {
-         seconds = 0;
-    }
-
-    $('time_left').innerHTML = '( ' + seconds + ' seconds left )';
-    window.setTimeout(timeLeftCounter, 1000);
-}
-EOF;
-// }}}
+			require_once FANFOU_PATH . '/templates/fanfou_js_admin.php';
+            exit;
             break;
 
         case 'fanfou_delete_friend':
             $user_id = trim($_GET['user_id']);
             $fanfou->delete_friend($user_id);
-            header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&fanfou-delete-friend=true&user_id=' . $user_id);
+            header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&fanfou-delete-friend=true&user_id=' . $user_id);
             exit;
+            break;
         default:
             break;
         }
-        exit;
     }
 
     if (!empty($_POST['fanfou_action'])) {
@@ -232,21 +181,16 @@ EOF;
             else {
                 wp_die(_f('Oops, your fanfou status was not posted. Please check your username and password.'));
             }
-
-            exit;
-            break;
-
-        case 'fanfou_delete_post':
-            $id  = trim($_POST['id']);
-            $fid = trim($_POST['fanfou_id']);
-            $fanfou->delete_post($id, $fid);
-            exit;
-            break;
+            break;;
         }
     }
 }
 add_action('init', 'fanfou_request_handler', 10);
 
+// }}}
+
+
+// {{{ fanfou_post_form
 
 /**
  * fanfou_post_form
@@ -289,6 +233,10 @@ function fanfouCharCount() {
     return $output;
 }
 
+// }}}
+
+
+// {{{ fanfou_write_post_form
 
 /**
  * fanfou_write_post_form
@@ -308,7 +256,7 @@ function fanfou_write_post_form() {
 
     if (empty($fanfou->username) or empty($fanfou->password)) {
         print('
-            <p>' . _f('Please enter your <a href="http://fanfou.com">Fanfou</a> account information in your <a href="options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '</p>
+            <p>' . _f('Please enter your <a href="http://fanfou.com">Fanfou</a> account information in your <a href="./admin.php?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '</p>
         ');
     }
 
@@ -316,7 +264,7 @@ function fanfou_write_post_form() {
         <div class="wrap">
             <h2>' . _f('Write Fanfou') . '</h2>
             <p>
-                ' . _f('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">Fanfou</a> using the account information in your <a href="options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '<br/>
+                ' . _f('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">Fanfou</a> using the account information in your <a href="./admin?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '<br/>
                 ' . _f('You can use the UBBCode <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.') . '
             </p>
             '.fanfou_post_form().'
@@ -324,16 +272,51 @@ function fanfou_write_post_form() {
     ');
 }
 
+// }}}
+
+
+// {{{ fanfou_admin
 
 /**
- * fanfou_options_form
+ * fanfou_admin
  *
  * @access public
  * @return void
  */
-function fanfou_options_form() {
-    global $fanfou;
+function fanfou_admin() {
+    global $wpdb, $fanfou;
 
+    $subpage = !isset($_GET['p']) ? 'options' : strtolower($_GET['p']);
+
+    switch ($subpage) {
+    default:
+    case "":
+        fanfou_admin_options();
+        break;
+    case "posts":
+        require_once FANFOU_PATH . '/templates/fanfou_posts.php';
+        break;
+    case "friends":
+        fanfou_admin_friends();
+        break;
+    }
+    return;
+}
+
+// }}}
+
+
+// {{{ fanfou_admin_options
+
+/**
+ * fanfou_admin_options
+ *
+ * @access public
+ * @return void
+ */
+function fanfou_admin_options()
+{
+    global $fanfou;
     // Saving settings
     if (isset($_POST['fanfou_action']) and $_POST['fanfou_action'] == 'update_settings') {
         $fanfou->save_settings();
@@ -344,15 +327,27 @@ function fanfou_options_form() {
         ');
     }
 
-    // Update fanfou status
-    if ( $_GET['fanfou-updated'] ) {
-        print('
-            <div id="message" class="updated fade">
-                <p>'._f('Fanfou status updated.').'</p>
-            </div>
-        ');
-    }
+    // Checked
+    $fanfou_notify_fanfou      = ($fanfou->notify_fanfou == 1) ? ' checked="checked"' : '';
+    $fanfou_notify_use_tinyurl = ($fanfou->notify_use_tinyurl == 1) ? ' checked="checked"' : '';
 
+	require_once (FANFOU_PATH .  "/templates/fanfou_options.php");
+}
+
+// }}}
+
+
+// {{{ fanfou_admin_friends
+
+/**
+ * fanfou_admin_friends
+ *
+ * @access public
+ * @return void
+ */
+function fanfou_admin_friends()
+{
+    global $fanfou;
 
     // Delete friends
     if ($_GET['fanfou-delete-friend'] and $_GET['user_id']) {
@@ -373,7 +368,7 @@ function fanfou_options_form() {
         <li>
             <a target="_blank" title="'.$friend->screen_name.'" href="'.$friend->url.'"><img alt="'.$friend->screen_name.'" src="'.$friend->profile_image_url.'" style="float: left; margin-right: 10px;"/></a>
             <a target="_blank" href="'.$friend->url.'">'.$friend->screen_name.'</a>
-            <p><a target="_blank" href="http://fanfou.com/friend.leave/'.$friend->id.'">取消关注</a> | <a href="'.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&fanfou_action=fanfou_delete_friend&user_id='.$friend->id.'">刪除好友</a> | <a target="_blank" href="http://fanfou.com/privatemsg.create/'.$friend->id.'">发送私信</a></p>
+            <p><a target="_blank" href="http://fanfou.com/friend.leave/'.$friend->id.'">取消关注</a> | <a href="'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&fanfou_action=fanfou_delete_friend&user_id='.$friend->id.'">刪除好友</a> | <a target="_blank" href="http://fanfou.com/privatemsg.create/'.$friend->id.'">发送私信</a></p>
         </li>
         ';
 
@@ -381,95 +376,13 @@ function fanfou_options_form() {
         if ($i >= 10) break;
     }
 
-    // Checked
-    $fanfou_notify_fanfou      = ($fanfou->notify_fanfou == 1) ? ' checked="checked"' : '';
-    $fanfou_notify_use_tinyurl = ($fanfou->notify_use_tinyurl == 1) ? ' checked="checked"' : '';
-
-    print ('
-    <div class="wrap">
-        <h2>Fanfou Tools v' . FANFOU_TOOLS_VER . '</h2>
-        <ul class="subsubsub">
-            <li><a class="current" href="options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a> |</li>
-            <li><a href="options-general.php?page=fanfou-friends.php">Fanfou Friends(1)</a></li>
-        </ul>
-        <form id="fanfou-tools" name="fanfou-tools" action="'.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php" method="post">
-            <input type="hidden" id="fanfou_action" name="fanfou_action" value="update_settings" />
-            <p>' . _f('For information and updates, please visit:') . '<br/>
-                <a href="http://www.phpvim.net/wordpress/fanfou-tools.html" target="_blank">http://www.phpvim.net/wordpress/fanfou-tools.html</a>
-            </p>
-
-            <fieldset class="options">
-            <legend><h3>' . _f('The Login Information') . '</h3></legend>
-            <table width="100%" border="0">
-                <tr>
-                    <td width="20%" align="right">'._f('FanFou ID or Email:').'</td>
-                    <td width="80%"><input type="text" size="25" name="ff_username" id="ff_username" value="'.$fanfou->username.'" /></td>
-                </tr>
-                <tr>
-                    <td align="right">'._f('FanFou Password:').'</td>
-                    <td><input type="password" size="25" name="ff_password" id="ff_password" value="'.$fanfou->password.'" /></td>
-                </tr>
-            </table>
-									<div class="submit">
-                        <input type="button" onclick="TestLogin(); return false;" value="'._f('Test Login').' &raquo;" id="login_test" name="login_test"/>
-                        &nbsp;
-                        <span id="fanfou_login_test_result"></span>
-						</div>
-            </fieldset>
-
-			<br/><br/>
-
-            <fieldset class="options">
-            <legend><h3>' . _f('Configuration') . '</h3></legend>
-            <div style="padding-left: 20px">
-                <p>
-                    <input type="checkbox" name="ff_notify_fanfou" id="ff_notify_fanfou" value="1" '.$fanfou_notify_fanfou.' />
-                    ' . _f('Create a fanfou status when you publish a new blog post?') . '
-                </p>
-
-                <p>
-                    <input type="checkbox" name="ff_notify_use_tinyurl" id="ff_notify_use_tinyurl" value="1" '.$fanfou_notify_use_tinyurl.' />
-                    ' . _f('Shorten the long permalink into a Tiny URL?') . '
-                    <br/>
-                    <em style="font:normal 10px verdana; color: gray;">' . _f('Using this option will slow down your blog post action.') . '</em>
-                </p>
-
-                <p>
-                    ' . _f('Format for notifier when publish a new blog post:') . '
-                    <input type="text" name="ff_notify_format" id="ff_notify_format" value="'.$fanfou->notify_format.'" size="25" />
-                </p>
-
-                <p>
-                    ' . _f('Format for the datetime of fanfou status:') . '
-                    <input type="text" name="ff_date_format" id="ff_date_format" value="'.$fanfou->date_format.'" size="25" />
-                    <br/>
-                    <em style="font:normal 10px verdana; color: gray;">' . _f('The dates was formatted by <a target="_blank" href="http://www.php.net/manual/en/function.date.php"><strong>date()</strong></a>') . '</em>.
-                </p>
-
-                <p>
-                    ' . _f('Fanfou status to show in sidebar:') . '
-                    <input type="text" name="ff_sidebar_status_num" id="ff_sidebar_status_num" value="'.$fanfou->sidebar_status_num.'" size="6" />
-                </p>
-
-                <p>
-                    ' . _f('Your Fanfou friends to show in sidebar:') . '
-                    <input type="text" name="ff_sidebar_friends_num" id="ff_sidebar_friends_num" value="'.$fanfou->sidebar_friends_num.'" size="6" />
-                </p>
-
-                <p>
-                    ' . _f('Time interval for updating new posts:') . '
-                    <input type="text" name="ff_download_interval" id="ff_download_interval" value="'.$fanfou->download_interval.'" size="6" /> seconds
-                </p>
-            </div>
-            </fieldset>
-            <div class="submit">
-                <input type="submit" name="savechanges" value="'._f('Save Changes').' &raquo;" />
-            </div>
-        </form>
-    </div>
-    ');
+    echo "Incoming soon...";
 }
 
+// }}}
+
+
+// {{{ fanfou_notify_post
 
 /**
  * fanfou_notify_post
@@ -489,7 +402,7 @@ function fanfou_notify_post($post_id = 0) {
 
     // Use TinyURL?
     if ($fanfou->notify_use_tinyurl == 1) {
-        require_once ABSPATH . PLUGINDIR . '/fanfou-tools/TinyURL.php';
+        require_once FANFOU_PATH . '/TinyURL.php';
         $permalink = TinyURL::transform($permalink);
     }
 
@@ -500,121 +413,10 @@ function fanfou_notify_post($post_id = 0) {
 }
 add_action('publish_post', 'fanfou_notify_post');
 
+// }}}
 
-/**
- * fanfou_manage_posts
- *
- * @access public
- * @return void
- */
-function fanfou_manage_posts() {
-    global $fanfou, $wpdb;
 
-    // define the columns to display, the syntax is 'internal name' => 'display name'
-    $posts_columns = array(
-        'id'         => '<div style="text-align: center">' . _f('ID') . '</div>',
-        'fanfou_id'  => '<div style="text-align: center">' . _f('Fanfou ID') . '</div>',
-        'date'       => _f('When'),
-        'status'     => _f('Status'),
-    );
-
-    // you can not edit these at the moment
-    $posts_columns['control_view']   = '';
-    $posts_columns['control_delete'] = '';
-
-    print '
-<div class="wrap">
-<h2>' . _f('Last 20 Fanfou Status') . ' &nbsp; - &nbsp; <a href="./options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a></h2>
-
-<br style="clear:both;" />
-
-<table class="widefat">
-    <thead>
-    <tr>
-';
-
-    foreach($posts_columns as $column_display_name) {
-        print "        <th scope=\"col\">$column_display_name</th>\n";
-    }
-
-    print '
-    </tr>
-    </thead>
-
-    <tbody id="the-list">
-';
-
-    // Load fanfou posts
-    $query  = "SELECT * FROM $wpdb->fanfou ";
-    $query .= "ORDER BY fanfou_created_at DESC ";
-    $query .= "LIMIT 20";
-
-    $posts  = $wpdb->get_results($query);
-
-    //print '<pre>';
-    //print_r($posts);
-
-    if ($posts) {
-    foreach ($posts as $post) {
-        $class = ('alternate' == $class) ? '' : 'alternate';
-        print "
-        <tr id='post-{$post->id}' class='$class'>\n";
-
-        foreach ($posts_columns as $c_name => $c_display_name) {
-            switch ($c_name) {
-            case 'id':
-            ?>
-            <th scope="row" style="text-align: center"><?php echo $post->id; ?></th>
-<?php
-                break;
-
-            case 'fanfou_id':
-?>
-            <th scope="row" style="text-align: center"><?php echo $post->fanfou_id; ?></th>
-<?php
-                break;
-
-            case 'date':
-?>
-            <td><span class="datetime"><?php echo date('Y-m-d H:i:s', $post->fanfou_created_at); ?></span></td>
-<?php
-                break;
-
-            case 'status':
-?>
-            <td><span title="<?php echo $post->fanfou_text;?>"><?php if (strlen($post->fanfou_text) <= 60) echo $post->fanfou_text; else echo substr($post->fanfou_text, 0, 60) . ' ...'; ?></span></td>
-<?php
-                break;
-
-            case 'control_view':
-?>
-            <td><a href="http://fanfou.com/statuses/<?php echo $post->fanfou_id; ?>" target="_blank"><?php _e('View', 'fanfou-tools'); ?></a></td>
-<?php
-                break;
-
-            case 'control_delete':
-?>
-            <td><a href='edit.php?page=fanfou-tools.php&amp;fanfou_action=fanfou_delete&amp;id=<?php echo $post->fanfou_id;?>' onclick="return DeleteFanfouStatus('<?php echo $post->id;?>', '<?php echo $post->fanfou_id;?>', 'js_encode(<?php _e("You are about to delete this status.\n'OK' to delete, 'Cancel' to stop.", 'fanfou-tools');?>)'); return false;"><?php _e('Delete', 'fanfou-tools');?></a></td>
-<?php
-                break;
-
-            default:
-?>
-            <td><?php do_action('manage_posts_custom_column', $column_name, $id); ?></td>
-<?php
-                break;
-            }
-        }
-    }
-    }
-    print '
-        </tbody>
-        </table>
-
-        </div>
-        ';
-}
-
+// {{{ fanfou_update_posts
 
 /**
  * fanfou_update_posts
@@ -656,6 +458,10 @@ function fanfou_update_posts() {
     update_option('fanfou_last_download', time());
 }
 
+// }}}
+
+
+// {{{ fanfou_get_posts
 
 /**
  * fanfou_get_posts
@@ -676,6 +482,10 @@ function fanfou_get_posts($sort, $sort_order, $limit) {
     return $wpdb->get_results($query);
 }
 
+// }}}
+
+
+// {{{ fanfou_list_posts
 
 /**
  * fanfou_list_posts
@@ -752,14 +562,16 @@ function fanfou_list_posts($args = '') {
 
     apply_filters('fanfou_list_posts', $output);
 
-    var_dump($output);
-
     if ($foo['echo'])
         echo $output;
     else
         return $output;
 }
 
+// }}}
+
+
+// {{{ fanfou_list_friends
 
 /**
  * fanfou_list_friends
@@ -822,6 +634,8 @@ function fanfou_list_friends($args = '') {
         return $output;
 
 }
+
+// }}}
 
 
 /**
@@ -916,7 +730,7 @@ function fanfou_init_widget() {
      */
     function wp_widget_fanfou_control() {
         print _f("<p>You can config <strong>Fanfou Tools</strong> from: \n<br/><br/>\n");
-        print "<a href='".get_bloginfo('wpurl')."/wp-admin/options-general.php?page=fanfou-tools.php'>Fanfou Tools Options</a></p>\n";
+        print "<a href='".get_bloginfo('wpurl')."/wp-admin/admin.php?page=fanfou-tools.php'>Fanfou Tools Options</a></p>\n";
         print "<br/><br/>\n";
 
         $options = $newoptions = get_option('widget_fanfou');
