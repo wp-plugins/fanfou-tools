@@ -6,7 +6,7 @@ Tested up to: 2.7-hemorrhage
 Stable tag: 1.0.2
 
 The fanfou-tools plugin allow you to display a list of your fanfou status.
-
+2.0a 版本目前尚在开发之中，请勿下载...
 
 == Description ==
 
