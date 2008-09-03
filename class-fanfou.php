@@ -69,7 +69,7 @@ class Fanfou
     // }}}
 
 
-    // {{{ Constructor Fanfou()
+    // {{{ Construct
 
     /**
      * Fanfou Constructor
@@ -131,12 +131,18 @@ class Fanfou
     function install_table()
     {
         global $wpdb;
+		$table_name = $wpdb->fanfou;
+
+		// check to see if the table has already been created.
+		if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
+			return;
+		}
 
         $char   = $wpdb->get_var("SELECT @@character_set_database");
         $engine = $wpdb->get_var("SELECT @@storage_engine");
         $result = $wpdb->query("
 
-CREATE TABLE IF NOT EXISTS `$wpdb->fanfou` (
+CREATE TABLE IF NOT EXISTS `$table_name` (
   `id`                  int(11)         NOT NULL AUTO_INCREMENT,
   `fanfou_id`           varchar(255)    NOT NULL,
   `fanfou_text`         varchar(255)    NOT NULL,
@@ -161,19 +167,20 @@ CREATE TABLE IF NOT EXISTS `$wpdb->fanfou` (
      * @return void
      */
     function install_options() {
-        add_option('fanfou_username',            '');
-        add_option('fanfou_password',            '');
-        add_option('fanfou_notify_fanfou',       1);     // true
-        add_option('fanfou_notify_format',       __('New Blog Post: %s %s'));
-        add_option('fanfou_notify_use_tinyurl',  0);
-        add_option('fanfou_sidebar_status_num',  10);
-        add_option('fanfou_sidebar_friends_num', 20);
-        add_option('fanfou_date_format',         'Y-m-d H:i');
-        add_option('fanfou_download_interval',   1800);
-        add_option('fanfou_last_download',       time() - 1800);
+        add_option('fanfou_username',               '');
+        add_option('fanfou_password',               '');
+        add_option('fanfou_notify_fanfou',          1);
+        add_option('fanfou_notify_format',          _f('New Blog Post: %s %s'));
+        add_option('fanfou_notify_use_tinyurl',     0);
+        add_option('fanfou_sidebar_status_num',     10);
+        add_option('fanfou_sidebar_friends_num',    20);
+        add_option('fanfou_date_format',            'Y-m-d H:i');
+        add_option('fanfou_download_interval',      600);
+        add_option('fanfou_last_download',          time() - 600);
 
         // .....
-        add_option('fanfou_update_hash',         '');
+        add_option('fanfou_update_hash',            '');
+	    add_option("fanfou_tools_ver",              FANFOU_TOOLS_VER);
     }
 
     // }}}

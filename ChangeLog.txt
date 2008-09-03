@@ -1,0 +1,12 @@
+------------------------
+Fanfou Tools - ChangeLog
+------------------------
+
+$Id: ChangeLog 11491 2008-08-16 13:04:44Z lem9 $
+$HeadURL: https://phpmyadmin.svn.sourceforge.net/svnroot/phpmyadmin/trunk/phpMyAdmin/ChangeLog $
+
+Changes with 2.0a
+	* fanfou_update_posts() 被运行了两次
+	* 修正页面排版的错误
+
+

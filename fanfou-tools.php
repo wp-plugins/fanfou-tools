@@ -4,25 +4,29 @@ Plugin Name: FanFou Tools
 Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools.html
 Description: FanFou Tools for WordPress Blog...<a href="options-general.php?page=fanfou-tools.php">Configuration Page</a>.
 Version: 2.0a
-Author: Verdana Mu <verdana.cn@gmail.com>
+Author: Verdana Mu
 Author URI: http://www.phpvim.net
 License: LGPL
 **/
 
 
-// Copyright (c) 2007 Verdana Mu. All rights reserved.
-//
-// Released under the LGPL license
-// http://www.gnu.org/licenses/lgpl.txt
-//
-// This is an add-on for WordPress
-// http://wordpress.org
-//
-// **********************************************************************
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// **********************************************************************
+/*  Copyright 2008  Verdana Mu (mail: verdana.cn#gmail.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
 
 
 define('FANFOU_TOOLS_VER',         '2.0a');
@@ -35,8 +39,10 @@ $fanfou = new Fanfou();
 load_plugin_textdomain('fanfou-tools', 'wp-content/plugins/fanfou-tools');
 
 
+// {{{ function _f($key)
 /**
- * _f
+ * Translates $message using the `fanfou-tools` locale for $domain. Wrap text
+ * strings that you are going to use in calculations with this function.
  *
  * @param mixed $key
  * @access protected
@@ -49,6 +55,8 @@ function _f($key) {
 
     return __($key, 'fanfou-tools');
 }
+// }}}
+
 
 
 /**
@@ -75,10 +83,7 @@ function fanfou_init() {
     global $wpdb, $fanfou;
     $wpdb->fanfou = $wpdb->prefix . 'fanfou';
     if (isset($_GET['activate']) and $_GET['activate'] == 'true') {
-        $tables = $wpdb->get_col('SHOW TABLES');
-        if (!in_array($wpdb->fanfou, $tables)) {
-            $fanfou->install_table();
-        }
+        $fanfou->install_table();
         $fanfou->install_options();
     }
     $fanfou->get_settings();
@@ -118,6 +123,7 @@ function fanfou_request_handler() {
     if (!empty($_GET['fanfou_action'])) {
         switch ($_GET['fanfou_action']) {
         case 'fanfou_update_posts':
+            remove_action('shutdown', 'fanfou_update_posts');
             fanfou_update_posts();
             header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&fanfou-updated=true');
             break;
@@ -382,6 +388,10 @@ function fanfou_options_form() {
     print ('
     <div class="wrap">
         <h2>Fanfou Tools v' . FANFOU_TOOLS_VER . '</h2>
+        <ul class="subsubsub">
+            <li><a class="current" href="options-general.php?page=fanfou-tools.php">Fanfou Tools Options</a> |</li>
+            <li><a href="options-general.php?page=fanfou-friends.php">Fanfou Friends(1)</a></li>
+        </ul>
         <form id="fanfou-tools" name="fanfou-tools" action="'.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php" method="post">
             <input type="hidden" id="fanfou_action" name="fanfou_action" value="update_settings" />
             <p>' . _f('For information and updates, please visit:') . '<br/>
@@ -389,8 +399,8 @@ function fanfou_options_form() {
             </p>
 
             <fieldset class="options">
-            <legend>' . _f('The Login Information') . '</legend>
-            <table style="padding-left: 20px" width="100%" border="0">
+            <legend><h3>' . _f('The Login Information') . '</h3></legend>
+            <table width="100%" border="0">
                 <tr>
                     <td width="20%" align="right">'._f('FanFou ID or Email:').'</td>
                     <td width="80%"><input type="text" size="25" name="ff_username" id="ff_username" value="'.$fanfou->username.'" /></td>
@@ -399,18 +409,18 @@ function fanfou_options_form() {
                     <td align="right">'._f('FanFou Password:').'</td>
                     <td><input type="password" size="25" name="ff_password" id="ff_password" value="'.$fanfou->password.'" /></td>
                 </tr>
-                <tr>
-                    <td colspan="2">
+            </table>
+									<div class="submit">
                         <input type="button" onclick="TestLogin(); return false;" value="'._f('Test Login').' &raquo;" id="login_test" name="login_test"/>
                         &nbsp;
                         <span id="fanfou_login_test_result"></span>
-                    </td>
-                </tr>
-            </table>
+						</div>
             </fieldset>
 
+			<br/><br/>
+
             <fieldset class="options">
-            <legend>' . _f('Configuration') . '</legend>
+            <legend><h3>' . _f('Configuration') . '</h3></legend>
             <div style="padding-left: 20px">
                 <p>
                     <input type="checkbox" name="ff_notify_fanfou" id="ff_notify_fanfou" value="1" '.$fanfou_notify_fanfou.' />
@@ -450,54 +460,10 @@ function fanfou_options_form() {
                     ' . _f('Time interval for updating new posts:') . '
                     <input type="text" name="ff_download_interval" id="ff_download_interval" value="'.$fanfou->download_interval.'" size="6" /> seconds
                 </p>
-
             </div>
             </fieldset>
-
             <div class="submit">
-                <input type="submit" name="submit" value="'._f('Save Changes').' &raquo;" />
-            </div>
-            </fieldset>
-        </form>
-
-        <fieldset class="options">
-        <legend>' . _f('Your Top 10 Newest Fanfou Friends') . '</legend>
-            <ol style="list-style-type: none">
-            '.$friends_htmlcode.'
-            </ol>
-
-            <a href="http://fanfou.com/friends" target="_blank">' . _f('Find more friends...') . '</a>
-        </fieldset>
-
-        <fieldset class="options">
-        <legend>' . _f('Manage or Write Your Fanfou Status') . '</legend>
-            <ul>
-                <li><a href="'.get_bloginfo('wpurl').'/wp-admin/edit.php?page=fanfou-tools.php">'._f('Manage Your Fanfou Status').'</a>
-                <li><a href="'.get_bloginfo('wpurl').'/wp-admin/post-new.php?page=fanfou-tools.php">'._f('Write a New Fanfou Status').'</a>
-            </u>
-        </fieldset>
-
-        <form method="get" action="'.get_bloginfo('wpurl').'/wp-admin/options-general.php" name="fanfou_update_posts">
-
-            <fieldset class="options">
-            <legend>' . _f('Synchronous Your Fanfou Status') . '</legend>
-
-                <p style="padding-left: 20px">
-                ' . _f('Use this button to manually update your fanfou status that show on your wordpress sidebar.') . '
-                <br/><br/>
-                ' . _f('Last sync time:') . ' <strong>'.date('Y-m-d H:i:s', $fanfou->last_download).'</strong>
-                <br/>
-                ' . _f('Next sync time:') . ' <strong>'.date('Y-m-d H:i:s', $fanfou->last_download + $fanfou->download_interval).' <span id="time_left"></span> </strong>
-                </p>
-<script type="text/javascript">
-window.setTimeout(timeLeftCounter, 1000);
-</script>
-            </fieldset>
-
-            <div class="submit">
-                <input type="submit" name="submit" value="'._f('Synchronous Fanfou Status').' &raquo;" />
-                <input type="hidden" name="page" value="fanfou-tools.php" />
-                <input type="hidden" name="fanfou_action" value="fanfou_update_posts" />
+                <input type="submit" name="savechanges" value="'._f('Save Changes').' &raquo;" />
             </div>
         </form>
     </div>
@@ -675,9 +641,8 @@ function fanfou_update_posts() {
         }
 
         $existing_ids = $wpdb->get_col("
-            SELECT fanfou_id FROM $wpdb->fanfou
-            WHERE fanfou_id IN ('".implode("', '", $fanfou_ids)."')
-            ");
+            SELECT `fanfou_id` FROM `$wpdb->fanfou`
+            WHERE `fanfou_id` IN ('".implode("', '", $fanfou_ids)."')");
 
         foreach ($posts as $post) {
             if (!$existing_ids or !in_array($post->id, $existing_ids)) {
@@ -704,11 +669,10 @@ function fanfou_update_posts() {
 function fanfou_get_posts($sort, $sort_order, $limit) {
     global $wpdb;
 
-    $query  = "SELECT fanfou_id, fanfou_text, fanfou_created_at ";
-    $query .= "FROM $wpdb->fanfou ";
-    $query .= "ORDER BY $sort $sort_order ";
+    $query  = "SELECT `fanfou_id`, `fanfou_text`, `fanfou_created_at` ";
+    $query .= "FROM `$wpdb->fanfou` ";
+    $query .= "ORDER BY `$sort` $sort_order ";
     $query .= "LIMIT $limit";
-
     return $wpdb->get_results($query);
 }
 
@@ -787,6 +751,8 @@ function fanfou_list_posts($args = '') {
     }
 
     apply_filters('fanfou_list_posts', $output);
+
+    var_dump($output);
 
     if ($foo['echo'])
         echo $output;
