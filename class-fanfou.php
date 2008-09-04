@@ -275,7 +275,7 @@ CREATE TABLE IF NOT EXISTS `$table_name` (
 
         if ($id and $fanfou_id) {
             // delete post from WordPress Cache
-            $wpdb->query("DELETE FROM `$wpdb->fanfou` WHERE `id`=$id AND `fanfou_id` = '$fanfou_id'");
+            $wpdb->query("DELETE FROM `$wpdb->fanfou` WHERE `id` = $id AND `fanfou_id` = '$fanfou_id'");
 
             // delete post from Fanfou
             $this->init_snoopy($this->username, $this->password);

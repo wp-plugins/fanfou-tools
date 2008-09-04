@@ -437,6 +437,9 @@ function fanfou_update_posts() {
     }
 
     if (is_array($posts) and count($posts) > 0) {
+		// Return the result array
+		$posts = array_reverse($posts);
+
         $fanfou_ids = array();
         foreach ($posts as $post) {
             $fanfou_ids[] = $wpdb->escape($post->id);
