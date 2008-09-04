@@ -7,10 +7,11 @@ Stable tag: 1.0.2
 
 The fanfou-tools plugin allow you to display a list of your fanfou status.
 
-o(กษ_กษ)o...
-
-
 == Description ==
+
+The fanfou-tools plugin allow you to display a list of your fanfou status.
+
+o(กษ_กษ)o...
 
 
 == Installation ==
