@@ -1,0 +1,44 @@
+=== Fanfou Tools ===
+Contributors: Verdana Mu
+Tags: blog, twitter, fanfou
+Requires at least: 2.1
+Tested up to: 2.6-bleeding
+Stable tag: 1.0.2
+
+The fanfou-tools plugin allow you to display a list of your fanfou status.
+
+o(กษ_กษ)o...
+
+
+== Description ==
+
+
+== Installation ==
+
+How to install the plugin and get it working?
+
+Extract and put all files into the WordPress plugin directory,
+eg: wp-content/plugins/fanfou-tools/.
+
+Then active this plugin in your wordpress plugins management page.
+
+
+== Frequently Asked Questions ==
+
+= Anything else? =
+
+That about does it - enjoy!
+
+-- Verdana Mu
+
+http://www.phpvim.net
+
+
+== Feedback ==
+
+For feedback, questions and any comments:
+
+- E-mail:    verdana.cn@gmail.com
+- Homepage:  http://www.phpvim.net/wordpress/fanfou-tools.html
+
+
