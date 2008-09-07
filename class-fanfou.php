@@ -185,8 +185,9 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         add_option('fanfou_date_format',            'Y-m-d H:i');
         add_option('fanfou_download_interval',      600);
         add_option('fanfou_last_download',          time() - 600);
+        add_option('fanfou_locale',                 '');
 
-        // .....
+
         add_option('fanfou_update_hash',            '');
 	    add_option("fanfou_tools_ver",              FANFOU_TOOLS_VER);
     }
@@ -397,8 +398,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         $this->sidebar_friends_num = (int) get_option('fanfou_sidebar_friends_num');
         $this->download_interval   = (int) get_option('fanfou_download_interval');
         $this->last_download       = (int) get_option('fanfou_last_download');
-        $this->bloginfo_wpurl      = get_bloginfo('wpurl');
-    }
+        $this->locale              = get_option('fanfou_locale');    }
 
     // }}}
 
@@ -421,6 +421,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         $this->sidebar_status_num  = intval(trim($_POST['ff_sidebar_status_num']));
         $this->sidebar_friends_num = intval(trim($_POST['ff_sidebar_friends_num']));
         $this->download_interval   = intval(trim($_POST['ff_download_interval']));
+        $this->locale              = $_POST['ff_locale'];
 
         update_option('fanfou_username',            $this->username);
         update_option('fanfou_password',            $this->password);
@@ -431,6 +432,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         update_option('fanfou_sidebar_status_num',  $this->sidebar_status_num);
         update_option('fanfou_sidebar_friends_num', $this->sidebar_friends_num);
         update_option('fanfou_download_interval',   $this->download_interval);
+        update_option('fanfou_locale',              $this->locale);
     }
 
     // }}}

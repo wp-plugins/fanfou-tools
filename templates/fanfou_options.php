@@ -68,10 +68,10 @@
             </p>
             <p>
                 <?php echo _f('Select a locale:'); ?>
-                <select>
-                    <option><?php echo _f("Automatic selection (default)");?></option>
-                    <option><?php echo _f("English (en_US)");?></option>
-                    <option><?php echo _f("Chinese (zh_CN)");?></option>
+                <select name="ff_locale">
+                    <option value=""><?php echo _f("Automatic selection (default)");?></option>
+                    <option value="en_US"><?php echo _f("English (en_US)");?></option>
+                    <option value="zh_CN"><?php echo _f("Chinese (zh_CN)");?></option>
                 </select>
             </p>
         </div>

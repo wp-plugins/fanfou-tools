@@ -6,6 +6,8 @@ $Id$
 $HeadURL$
 
 Changes with 2.0a
+	* 增加 API fanfou_latest_post()，显示最新一条消息
+	* 增加 Locale 选项
 	* 初次激活插件时，创建数据库编码可能与数据表不符，形成乱码
 	* 无法删除消息
 	* 将主程序中的 HTML 代码拆分为独立的模板文件
