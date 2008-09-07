@@ -38,39 +38,41 @@
                 <input type="checkbox" name="ff_notify_fanfou" id="ff_notify_fanfou" value="1" <?php echo $fanfou_notify_fanfou; ?> />
                 <?php echo _f('Create a fanfou status when you publish a new blog post?'); ?>
             </p>
-
             <p>
                 <input type="checkbox" name="ff_notify_use_tinyurl" id="ff_notify_use_tinyurl" value="1" <?php echo $fanfou_notify_use_tinyurl; ?> />
                 <?php echo _f('Shorten the long permalink into a Tiny URL?'); ?>
                 <br/>
                 <em style="font:normal 10px verdana; color: gray;"><?php echo _f("Using this option will slow down your blog post action."); ?></em>
             </p>
-
             <p>
                 <?php echo _f('Format for notifier when publish a new blog post:'); ?>
                 <input type="text" name="ff_notify_format" id="ff_notify_format" value="<?php echo $fanfou->notify_format; ?>" size="25" />
             </p>
-
             <p>
                 <?php echo _f('Format for the datetime of fanfou status:'); ?>
                 <input type="text" name="ff_date_format" id="ff_date_format" value="<?php echo $fanfou->date_format; ?>" size="25" />
                 <br/>
                 <em style="font:normal 10px verdana; color: gray;"><?php echo _f('The dates was formatted by <a target="_blank" href="http://www.php.net/manual/en/function.date.php"><strong>date()</strong></a>'); ?></em>.
             </p>
-
             <p>
                 <?php echo _f('Fanfou status to show in sidebar:'); ?>
                 <input type="text" name="ff_sidebar_status_num" id="ff_sidebar_status_num" value="<?php echo $fanfou->sidebar_status_num; ?>" size="6" />
             </p>
-
             <p>
                 <?php echo _f('Your Fanfou friends to show in sidebar:'); ?>
                 <input type="text" name="ff_sidebar_friends_num" id="ff_sidebar_friends_num" value="<?php echo $fanfou->sidebar_friends_num; ?>" size="6" />
             </p>
-
             <p>
                 <?php echo _f('Time interval for updating new posts:'); ?>
                 <input type="text" name="ff_download_interval" id="ff_download_interval" value="<?php echo $fanfou->download_interval; ?>" size="6" /> seconds
+            </p>
+            <p>
+                <?php echo _f('Select a locale:'); ?>
+                <select>
+                    <option><?php echo _f("Automatic selection (default)");?></option>
+                    <option><?php echo _f("English (en_US)");?></option>
+                    <option><?php echo _f("Chinese (zh_CN)");?></option>
+                </select>
             </p>
         </div>
         </fieldset>
