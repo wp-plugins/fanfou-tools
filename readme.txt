@@ -11,8 +11,6 @@ The fanfou-tools plugin allow you to display a list of your fanfou status.
 
 The fanfou-tools plugin allow you to display a list of your fanfou status.
 
-o(กษ_กษ)o...
-
 
 == Installation ==
 
