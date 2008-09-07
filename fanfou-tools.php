@@ -265,7 +265,7 @@ function fanfou_write_post_form() {
             <h2>' . _f('Write Fanfou') . '</h2>
             <p>
                 ' . _f('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">Fanfou</a> using the account information in your <a href="./admin?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '<br/>
-                ' . _f('You can use the UBBCode <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.') . '
+                ' . _f('You can use the code <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.') . ';
             </p>
             '.fanfou_post_form().'
         </div>

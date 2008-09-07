@@ -18,7 +18,7 @@
 /**
  * TinyURL
  *
- * @version $Id: TinyURL.php 50915 2008-06-17 17:06:02Z VerdanaMu $
+ * @version $Id$
  * @copyright Copyright (C) 2007 Verdana Mu
  * @author Verdana Mu <verdana.cn@gmail.com>
  * @license PHP Version 3.0 {@link http://www.php.net/license/3_0.txt}
