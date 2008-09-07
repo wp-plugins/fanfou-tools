@@ -25,7 +25,7 @@ if (!class_exists('Services_JSON')) {
  * Class FanFou
  *
  * @package wp-content/plugins/fanfou-tools
- * @version $Id: class-fanfou.php 62469 2008-09-03 00:32:27Z VerdanaMu $
+ * @version $Id$
  * @copyright Copyright (C) 2007 Verdana Mu
  * @author Verdana Mu <verdana.cn@gmail.com>
  * @license LGPL license {@link http://www.gnu.org/licenses/lgpl.txt}

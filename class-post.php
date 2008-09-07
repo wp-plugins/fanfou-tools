@@ -19,7 +19,7 @@
  * Class FanfouPost
  *
  * @package wp-content/plugins/fanfou-tools
- * @version $Id: FanfouPost.php 50915 2008-06-17 17:06:02Z VerdanaMu $
+ * @version $Id$
  * @copyright Copyright (C) 2007 Verdana Mu
  * @author Verdana Mu <verdana.cn@gmail.com>
  * @license LGPL license {@link http://www.gnu.org/licenses/lgpl.txt}
