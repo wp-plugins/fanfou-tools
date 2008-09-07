@@ -6,6 +6,7 @@ $Id$
 $HeadURL: https://phpmyadmin.svn.sourceforge.net/svnroot/phpmyadmin/trunk/phpMyAdmin/ChangeLog $
 
 Changes with 2.0a
+	* 初次激活插件时，创建数据库编码可能与数据表不符，形成乱码
 	* 无法删除消息
 	* 将主程序中的 HTML 代码拆分为独立的模板文件
 	* fanfou_update_posts() 被运行了两次

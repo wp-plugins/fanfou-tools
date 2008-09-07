@@ -123,7 +123,7 @@ class Fanfou
     // {{{ install_table()
 
     /**
-     * install
+     * Install table when first active fanfou-tools plugin
      *
      * @access public
      * @return void
@@ -131,18 +131,27 @@ class Fanfou
     function install_table()
     {
         global $wpdb;
-		$table_name = $wpdb->fanfou;
+		$fanfou = $wpdb->fanfou;
 
 		// check to see if the table has already been created.
-		if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
+		if($wpdb->get_var("SHOW TABLES LIKE '$fanfou'") == $fanfou) {
 			return;
 		}
 
-        $char   = $wpdb->get_var("SELECT @@character_set_database");
-        $engine = $wpdb->get_var("SELECT @@storage_engine");
-        $result = $wpdb->query("
-
-CREATE TABLE IF NOT EXISTS `$table_name` (
+        $engine  = 'MyISAM';
+        $charset = 'utf8';
+        $foo     = $wpdb->get_var("SHOW CREATE TABLE $wpdb->posts", 1);
+        if ($foo) {
+            preg_match("/ENGINE=([a-zA-Z]+) .* CHARSET=([a-zA-Z0-9]+)/i", $foo, $matches);
+            if (isset($matches[1])) {
+                $engine = $matches[1];
+            }
+            if (isset($matches[2])) {
+                $charset = $matches[2];
+            }
+        }
+        $wpdb->query("
+CREATE TABLE IF NOT EXISTS `$fanfou` (
   `id`                  int(11)         NOT NULL AUTO_INCREMENT,
   `fanfou_id`           varchar(255)    NOT NULL,
   `fanfou_text`         varchar(255)    NOT NULL,
@@ -150,8 +159,7 @@ CREATE TABLE IF NOT EXISTS `$table_name` (
   `modified`            int(10)         NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fanfou_id` (`fanfou_id`)
-) ENGINE=$engine DEFAULT CHARSET=$char AUTO_INCREMENT=1;
-
+) ENGINE=$engine DEFAULT CHARSET=$charset AUTO_INCREMENT=1;
         ");
     }
 
@@ -264,6 +272,7 @@ CREATE TABLE IF NOT EXISTS `$table_name` (
 
     /**
      * delete_post
+     * 首先从饭否服务器端删除消息，然后再删除本地的消息
      *
      * @param mixed $id
      * @param mixed $fanfou_id
@@ -274,9 +283,6 @@ CREATE TABLE IF NOT EXISTS `$table_name` (
         global $wpdb;
 
         if ($id and $fanfou_id) {
-            // delete post from WordPress Cache
-            $wpdb->query("DELETE FROM `$wpdb->fanfou` WHERE `id` = $id AND `fanfou_id` = '$fanfou_id'");
-
             // delete post from Fanfou
             $this->init_snoopy($this->username, $this->password);
             $this->snoop->fetch("http://api.fanfou.com/statuses/destroy.json?id=$fanfou_id");
@@ -284,8 +290,12 @@ CREATE TABLE IF NOT EXISTS `$table_name` (
             if (strpos($this->snoop->response_code, '200')) {
                 update_option('fanfou_update_hash'  , '');
                 update_option('fanfou_last_download', strtotime('-8 minutes'));
+
+                // delete post from WordPress Cache
+                $result = $wpdb->query("DELETE FROM `$wpdb->fanfou` WHERE `id` = $id AND `fanfou_id` = '$fanfou_id'");
                 return true;
             }
+
         }
     }
 
