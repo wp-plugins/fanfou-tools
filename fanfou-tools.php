@@ -504,6 +504,21 @@ function fanfou_get_posts($sort, $sort_order, $limit) {
 // }}}
 
 
+//  {{{ fanfou_latest_post
+/**
+ * fanfou_latest_post
+ *
+ * @access public
+ * @return void
+ */
+function fanfou_latest_post()
+{
+    global $wpdb;
+    return $wpdb->get_row("SELECT * FROM `$wpdb->fanfou` ORDER BY  `fanfou_created_at` DESC LIMIT 1");;
+}
+// }}}
+
+
 // {{{ fanfou_list_posts
 
 /**

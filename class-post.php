@@ -24,7 +24,8 @@
  * @author Verdana Mu <verdana.cn@gmail.com>
  * @license LGPL license {@link http://www.gnu.org/licenses/lgpl.txt}
  */
-class FanfouPost {
+class FanfouPost
+{
     // {{{ Properties
 
     /**
@@ -70,7 +71,7 @@ class FanfouPost {
     // }}}
 
 
-    // {{{ Constructor FanfouPost($fanfou_id, $fanfou_text, $fanfou_created_at = 0)
+    // {{{ FanfouPost($fanfou_id, $fanfou_text, $fanfou_created_at = 0)
 
     /**
      * FanfouPost Construct
