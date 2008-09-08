@@ -69,9 +69,23 @@
             <p>
                 <?php echo _f('Select a locale:'); ?>
                 <select name="ff_locale">
-                    <option value=""><?php echo _f("Automatic selection (default)");?></option>
-                    <option value="en_US"><?php echo _f("English (en_US)");?></option>
-                    <option value="zh_CN"><?php echo _f("Chinese (zh_CN)");?></option>
+                <?php
+                $current_locale = get_option('fanfou_locale');
+                !$current_locale && $current_locale = 'default';
+                
+                $locales = array(
+                    'default' => _f('Automatic selection (default)'),
+                    'en_US'   => _f('English (en_US)'),
+                    'zh_CN'   => _f('Chinese (zh_CN)'),
+                );
+                foreach ($locales as $locale=>$text) {
+                    $selected = '';
+                    if ($current_locale == $locale) {
+                        $selected = " selected='selected'";
+                    }
+                    echo "<option value=\"$locale\"$selected>$text</option>";
+                }
+                ?>
                 </select>
             </p>
         </div>

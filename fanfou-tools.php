@@ -36,9 +36,6 @@ require_once FANFOU_PATH . '/class-fanfou.php';
 require_once FANFOU_PATH . '/class-post.php';
 $fanfou = new Fanfou();
 
-load_plugin_textdomain('fanfou-tools', 'wp-content/plugins/fanfou-tools');
-
-
 // {{{ function _f($key)
 
 /**
@@ -101,6 +98,14 @@ function fanfou_init() {
     if (is_admin()) {
         wp_enqueue_script('prototype');
     }
+
+    // Using our own locale
+    $custom_locale = get_option('fanfou_locale');
+    if (!$custom_locale or $custom_locale == 'default') {
+        $custom_locale = WPLANG;
+    }
+    $GLOBALS['locale'] = $custom_locale;
+    load_plugin_textdomain('fanfou-tools', 'wp-content/plugins/fanfou-tools');
 }
 add_action('init', 'fanfou_init');
 

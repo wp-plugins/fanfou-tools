@@ -3,7 +3,7 @@ function TestLogin() {
     var password = encodeURIComponent($('ff_password').value);
 
     var result = $('fanfou_login_test_result');
-    result.innerHTML = 'Testing...';
+    result.innerHTML = "<?php echo _f('Testing...')?>";
 
     var params = "fanfou_action=fanfou_login_test&ff_username=" + username + "&ff_password=" + password;
     var myAjax = new Ajax.Updater(

@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         add_option('fanfou_date_format',            'Y-m-d H:i');
         add_option('fanfou_download_interval',      600);
         add_option('fanfou_last_download',          time() - 600);
-        add_option('fanfou_locale',                 '');
+        add_option('fanfou_locale',                 'default');
 
 
         add_option('fanfou_update_hash',            '');
