@@ -824,8 +824,9 @@ function fanfou_init_widget() {
 
     // Tell Dynamic Sidebar about our new widget and its control
     register_sidebar_widget('Fanfou Tools',   'wp_widget_fanfou');
-    register_sidebar_widget('Fanfou Friends', 'wp_widget_fanfou_friends');
     register_widget_control('Fanfou Tools',   'wp_widget_fanfou_control');
+
+    register_sidebar_widget('Fanfou Friends', 'wp_widget_fanfou_friends');
     register_widget_control('Fanfou Friends', 'wp_widget_fanfou_friends_control');
 }
 
