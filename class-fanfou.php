@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         add_option('fanfou_username',               '');
         add_option('fanfou_password',               '');
         add_option('fanfou_notify_fanfou',          1);
-        add_option('fanfou_notify_format',          _f('New Blog Post: %s %s'));
+        add_option('fanfou_notify_format',          _f('New Blog Post: %postname%'));
         add_option('fanfou_notify_use_tinyurl',     0);
         add_option('fanfou_sidebar_status_num',     10);
         add_option('fanfou_sidebar_friends_num',    20);
@@ -186,7 +186,6 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         add_option('fanfou_download_interval',      600);
         add_option('fanfou_last_download',          time() - 600);
         add_option('fanfou_locale',                 'default');
-
 
         add_option('fanfou_update_hash',            '');
 	    add_option("fanfou_tools_ver",              FANFOU_TOOLS_VER);
@@ -224,7 +223,9 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
      * @return void
      */
     function tinyurl($text) {
-        require_once ABSPATH . PLUGINDIR . '/fanfou-tools/TinyURL.php';
+        if (!class_exists('TinyURL')) {
+            require_once ABSPATH . PLUGINDIR . '/fanfou-tools/TinyURL.php';;
+        };
         return preg_replace('|\[tiny\](.*?)\[/tiny\]|ise', "TinyURL::transform('\\1')", $text);
     }
 
@@ -241,12 +242,13 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
      * @return void
      */
     function post($text = '') {
-        if (empty($this->username) or empty($this->password) or empty($text)) {
+        if (!$this->username or !$this->password or !$text) {
             return;
         }
 
         // Convert TinyURL
         $text = $this->tinyurl($text);
+        var_dump($text);
 
         $this->init_snoopy($this->username, $this->password);
         $this->snoop->submit(
@@ -398,7 +400,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         $this->sidebar_friends_num = (int) get_option('fanfou_sidebar_friends_num');
         $this->download_interval   = (int) get_option('fanfou_download_interval');
         $this->last_download       = (int) get_option('fanfou_last_download');
-        $this->locale              = get_option('fanfou_locale');    }
+        $this->locale              = get_option('fanfou_locale');    }
 
     // }}}
 
@@ -415,7 +417,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         $this->username            = trim($_POST['ff_username']);
         $this->password            = trim($_POST['ff_password']);
         $this->notify_fanfou       = intval(trim($_POST['ff_notify_fanfou']));
-        $this->notify_format       = trim($_POST['ff_notify_format']);
+        $this->notify_format       = htmlspecialchars(trim($_POST['ff_notify_format']));
         $this->notify_use_tinyurl  = intval(trim($_POST['ff_notify_use_tinyurl']));
         $this->date_format         = trim($_POST['ff_date_format']);
         $this->sidebar_status_num  = intval(trim($_POST['ff_sidebar_status_num']));

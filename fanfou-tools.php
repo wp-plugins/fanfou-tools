@@ -402,18 +402,29 @@ function fanfou_notify_post($post_id = 0) {
         return;
     }
 
-    $post      = get_post($post_id);
-    $permalink = get_permalink($post_id);
+    $foo = $fanfou->notify_format;
+    if (!$foo) return;
 
-    // Use TinyURL?
-    if ($fanfou->notify_use_tinyurl == 1) {
-        require_once FANFOU_PATH . '/TinyURL.php';
-        $permalink = TinyURL::transform($permalink);
+    if (false !== strpos($foo, '%blogname%')) {
+        $foo = str_replace('%blogname%', get_bloginfo('name'), $foo);
+    }
+    if (false !== strpos($foo, '%permalink%')) {
+        $permalink = get_permalink($post_id);
+
+        // Use TinyURL?
+        if ($fanfou->notify_use_tinyurl) {
+            require_once FANFOU_PATH . '/TinyURL.php';
+            $permalink = TinyURL::transform($permalink);
+        }
+
+       $foo = str_replace('%permalink%', $permalink, $foo);
+    }
+    if (false !== strpos($foo, '%postname%')) {
+        $post = get_post($post_id);
+        $foo = str_replace('%postname%', $post->post_title, $foo);
     }
 
-    $text = sprintf(_f($fanfou->notify_format), $post->post_title, $permalink);
-    $fanfou->post($text);
-
+    $fanfou->post($foo);
     add_post_meta($post_id, 'fanfou_marker', '1', true);
 }
 add_action('publish_post', 'fanfou_notify_post');

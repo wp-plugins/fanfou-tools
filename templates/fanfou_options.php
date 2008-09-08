@@ -46,13 +46,14 @@
             </p>
             <p>
                 <?php echo _f('Format for notifier when publish a new blog post:'); ?>
-                <input type="text" name="ff_notify_format" id="ff_notify_format" value="<?php echo $fanfou->notify_format; ?>" size="25" />
+                <input type="text" name="ff_notify_format" id="ff_notify_format" value="<?php echo $fanfou->notify_format; ?>" size="25" /><br/>
+                <em style="font:normal 10px verdana; color: gray;"><?php echo _f("Available tags for customizing the format: <strong>%blogname%</strong>, <strong>%postname%</strong>, <strong>%permalink%</strong>."); ?></em>
             </p>
             <p>
                 <?php echo _f('Format for the datetime of fanfou status:'); ?>
                 <input type="text" name="ff_date_format" id="ff_date_format" value="<?php echo $fanfou->date_format; ?>" size="25" />
                 <br/>
-                <em style="font:normal 10px verdana; color: gray;"><?php echo _f('The dates was formatted by <a target="_blank" href="http://www.php.net/manual/en/function.date.php"><strong>date()</strong></a>'); ?></em>.
+                <em style="font:normal 10px verdana; color: gray;"><?php echo _f('The dates was formatted by <a target="_blank" href="http://www.php.net/date"><strong>date()</strong></a>'); ?></em>.
             </p>
             <p>
                 <?php echo _f('Fanfou status to show in sidebar:'); ?>
@@ -71,8 +72,9 @@
                 <select name="ff_locale">
                 <?php
                 $current_locale = get_option('fanfou_locale');
-                !$current_locale && $current_locale = 'default';
-                
+                if (!$current_locale) {
+                    $current_locale = 'default';
+                }
                 $locales = array(
                     'default' => _f('Automatic selection (default)'),
                     'en_US'   => _f('English (en_US)'),

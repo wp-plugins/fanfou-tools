@@ -35,12 +35,16 @@ class TinyURL
      * @return void
      */
     public function transform($url) {
-        if (empty($url) or !preg_match('|^(?:http://)?([^/]+)|i', $url)) {
+        if (!$url or !preg_match('|^(?:http://)?([^/]+)|i', $url)) {
             return;
         }
 
-        $url     = "http://tinyurl.com/create.php?url=$url";
-        $content = file_get_contents($url);
+        $createUrl = "http://tinyurl.com/create.php?url=$url";
+        $content = @file_get_contents($createUrl);
+        if (!$content) {
+            return $url;
+        }
+
         $pattern = '|<blockquote><b>(http://tinyurl\.com/([^<]+))</b><br><small>|i';
         preg_match($pattern, $content, $matches);
         return $matches[1];
