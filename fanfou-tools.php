@@ -471,7 +471,7 @@ function fanfou_update_posts() {
 
         foreach ($posts as $post) {
             if (!$existing_ids or !in_array($post->id, $existing_ids)) {
-                $status = &new FanfouPost($post->id, $post->text, $post->created_at);
+                $status = new FanfouPost($post->id, $post->text, $post->created_at);
                 $status->insert();
             }
         }
