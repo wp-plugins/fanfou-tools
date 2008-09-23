@@ -82,7 +82,8 @@ add_action('admin_menu', 'fanfou_add_menu');
  * @access public
  * @return void
  */
-function fanfou_init() {
+function fanfou_init()
+{
     global $wpdb, $fanfou;
     $wpdb->fanfou = $wpdb->prefix . 'fanfou';
     if (isset($_GET['activate']) and $_GET['activate'] == 'true') {
@@ -106,6 +107,9 @@ function fanfou_init() {
     }
     $GLOBALS['locale'] = $custom_locale;
     load_plugin_textdomain('fanfou-tools', 'wp-content/plugins/fanfou-tools');
+
+    // Reset locale
+    $GLOBALS['locale'] = WPLANG;
 }
 add_action('init', 'fanfou_init');
 
