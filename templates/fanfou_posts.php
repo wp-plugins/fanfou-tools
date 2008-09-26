@@ -31,6 +31,12 @@ $posts_columns = array(
 <div class="wrap">
 <h2>Fanfou Tools v<?php echo FANFOU_TOOLS_VER;?> - <em style="color: gray; font-size: 18px;"><?php echo  _f('Last 20 Fanfou Status'); ?></em></h2>
 <?php include_once('option_page_navbar.php');?>
+
+
+<div class="submit">
+    <input type="button" class="" name="" value="<?php echo _f("Synchronize");?>" />
+</div>
+
 <br style="clear:both;" />
 <table class="widefat">
 <thead>
