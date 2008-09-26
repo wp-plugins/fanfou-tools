@@ -734,7 +734,7 @@ function fanfou_init_widget() {
     function wp_widget_fanfou_friends($args) {
         extract($args);
         $options = get_option('widget_fanfou');
-        $title   = empty($options['friends_title']) ? _f('Fanfou Friends' ) : $options['friends_title'];
+        $title   = empty($options['friends_title']) ? _f('Fanfou Friends') : $options['friends_title'];
 
         $only_onhome = (boolean) $options['friends_only_onhome'];
         if ($only_onhome and !is_home()) {

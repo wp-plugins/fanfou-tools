@@ -30,13 +30,8 @@ $posts_columns = array(
 
 <div class="wrap">
 <h2>Fanfou Tools v<?php echo FANFOU_TOOLS_VER;?> - <em style="color: gray; font-size: 18px;"><?php echo  _f('Last 20 Fanfou Status'); ?></em></h2>
-<ul class="subsubsub">
-    <li><a href="./admin.php?page=fanfou-tools.php&p=options">Fanfou Tools Options</a> |</li>
-    <li><a class="current" href="./admin.php?page=fanfou-tools.php&p=posts">Fanfou Posts</a> |</li>
-    <li><a href="./admin.php?page=fanfou-tools.php&p=friends">Fanfou Friends</a></li>
-</ul>
+<?php include_once('option_page_navbar.php');?>
 <br style="clear:both;" />
-
 <table class="widefat">
 <thead>
 <tr>
