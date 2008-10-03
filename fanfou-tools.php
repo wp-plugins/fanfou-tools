@@ -10,31 +10,13 @@ License: LGPL
 **/
 
 
-/*  Copyright 2008  Verdana Mu (mail: verdana.cn#gmail.com)
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-
-
-
 define('FANFOU_TOOLS_VER', '2.0a');
 define('FANFOU_PATH', ABSPATH . PLUGINDIR . '/fanfou-tools');
 
 require_once FANFOU_PATH . '/class-fanfou.php';
 require_once FANFOU_PATH . '/class-post.php';
 $fanfou = new Fanfou();
+
 
 // {{{ function _f($key)
 
@@ -46,7 +28,8 @@ $fanfou = new Fanfou();
  * @access protected
  * @return void
  */
-function _f($key) {
+function _f($key)
+{
     if (!function_exists('__')) {
         return $key;
     }
@@ -64,7 +47,8 @@ function _f($key) {
  * @access public
  * @return void
  */
-function fanfou_add_menu() {
+function fanfou_add_menu()
+{
     // Options page
     $title = _f("Fanfou Tools");
     add_options_page($title, $title, 10, basename(__FILE__), 'fanfou_admin');
@@ -124,7 +108,8 @@ add_action('init', 'fanfou_init');
  * @access public
  * @return void
  */
-function fanfou_head_admin() {
+function fanfou_head_admin()
+{
     print("\n<script type=\"text/javascript\" src=\"".get_bloginfo('wpurl')."/index.php?fanfou_action=fanfou_js_code\"></script>");
 }
 add_action('admin_head', 'fanfou_head_admin');
@@ -132,7 +117,7 @@ add_action('admin_head', 'fanfou_head_admin');
 // }}}
 
 
-// {{{ fanfou_request_handler}
+// {{{ fanfou_request_handler
 
 /**
  * fanfou_request_handler
@@ -140,7 +125,8 @@ add_action('admin_head', 'fanfou_head_admin');
  * @access public
  * @return void
  */
-function fanfou_request_handler() {
+function fanfou_request_handler()
+{
     global $fanfou;
 
     if (!empty($_GET['fanfou_action'])) {
@@ -207,7 +193,8 @@ add_action('init', 'fanfou_request_handler', 10);
  * @access public
  * @return void
  */
-function fanfou_post_form() {
+function fanfou_post_form()
+{
     $output = '';
     if (current_user_can('publish_posts')) {
         $output .= '
@@ -253,7 +240,8 @@ function fanfouCharCount() {
  * @access public
  * @return void
  */
-function fanfou_write_post_form() {
+function fanfou_write_post_form()
+{
     global $fanfou;
     if ($_GET['fanfou-posted']) {
         print('
@@ -292,11 +280,22 @@ function fanfou_write_post_form() {
  * @access public
  * @return void
  */
-function fanfou_admin() {
+function fanfou_admin()
+{
     global $wpdb, $fanfou;
 
-    $subpage = !isset($_GET['p']) ? 'options' : strtolower($_GET['p']);
+    $subpage = !isset($_GET['tab']) ? 'options' : strtolower($_GET['tab']);
 
+    // Check and include module file
+    $module = FANFOU_PATH . '/templates/fanfou_' . $subpage . '.php';
+    if (!$subpage or !file_exists($module)) {
+        fanfou_admin_options();
+        return;
+    }
+    include_once $module;
+
+
+    /**
     switch ($subpage) {
     default:
     case "":
@@ -306,10 +305,15 @@ function fanfou_admin() {
         require_once FANFOU_PATH . '/templates/fanfou_posts.php';
         break;
     case "friends":
-        fanfou_admin_friends();
+        require_once FANFOU_PATH . '/templates/fanfou_friends.php'
+        //fanfou_admin_friends();
+        break;
+    case "newpost":
+        require_once FANFOU_PATH . '/templates/fanfou_newpost.php';
         break;
     }
     return;
+    **/
 }
 
 // }}}
@@ -346,51 +350,6 @@ function fanfou_admin_options()
 // }}}
 
 
-// {{{ fanfou_admin_friends
-
-/**
- * fanfou_admin_friends
- *
- * @access public
- * @return void
- */
-function fanfou_admin_friends()
-{
-    global $fanfou;
-
-    // Delete friends
-    if ($_GET['fanfou-delete-friend'] and $_GET['user_id']) {
-        print('
-            <div id="message" class="updated fade">
-                <p>'._f("Your Fanfou Friend <a href='http://fanfou.com/{$_GET['user_id']}' target='_blank'>{$_GET['user_id']}</a> has been deleted...").'</p>
-            </div>
-        ');
-    }
-
-
-    // Load fanfou friends
-    $friends_htmlcode = '';
-    $friends          = (array) $fanfou->get_friends();
-    $i = 0;
-    foreach($friends as $friend) {
-        $friends_htmlcode .= '
-        <li>
-            <a target="_blank" title="'.$friend->screen_name.'" href="'.$friend->url.'"><img alt="'.$friend->screen_name.'" src="'.$friend->profile_image_url.'" style="float: left; margin-right: 10px;"/></a>
-            <a target="_blank" href="'.$friend->url.'">'.$friend->screen_name.'</a>
-            <p><a target="_blank" href="http://fanfou.com/friend.leave/'.$friend->id.'">取消关注</a> | <a href="'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&fanfou_action=fanfou_delete_friend&user_id='.$friend->id.'">刪除好友</a> | <a target="_blank" href="http://fanfou.com/privatemsg.create/'.$friend->id.'">发送私信</a></p>
-        </li>
-        ';
-
-        $i ++;
-        if ($i >= 10) break;
-    }
-
-    echo "Incoming soon...";
-}
-
-// }}}
-
-
 // {{{ fanfou_notify_post
 
 /**
@@ -399,7 +358,8 @@ function fanfou_admin_friends()
  * @access public
  * @return void
  */
-function fanfou_notify_post($post_id = 0) {
+function fanfou_notify_post($post_id = 0)
+{
     global $fanfou;
 
     if ($fanfou->notify_fanfou == 0 or $post_id == 0 or get_post_meta($post_id, 'fanfou_marker', true) == '1') {
@@ -444,7 +404,8 @@ add_action('publish_post', 'fanfou_notify_post');
  * @access public
  * @return void
  */
-function fanfou_update_posts() {
+function fanfou_update_posts()
+{
     global $wpdb, $fanfou;
     if (!$fanfou->username or !$fanfou->password) {
         exit;
@@ -495,7 +456,8 @@ function fanfou_update_posts() {
  * @access public
  * @return void
  */
-function fanfou_get_posts($sort, $sort_order, $limit) {
+function fanfou_get_posts($sort, $sort_order, $limit)
+{
     global $wpdb;
 
     $query  = "SELECT `fanfou_id`, `fanfou_text`, `fanfou_created_at` ";
@@ -532,7 +494,8 @@ function fanfou_latest_post()
  * @access public
  * @return void
  */
-function fanfou_list_posts($args = '') {
+function fanfou_list_posts($args = '')
+{
     // Process the arguments for function: fanfou_list_posts($args)
     is_array($args) ? $foo = &$args : parse_str($args, $foo);
 
@@ -618,7 +581,8 @@ function fanfou_list_posts($args = '') {
  * @access public
  * @return void
  */
-function fanfou_list_friends($args = '') {
+function fanfou_list_friends($args = '')
+{
     is_array($args) ? $foo = &$args : parse_str($args, $foo);
 
     // Default arguments
@@ -683,7 +647,8 @@ function fanfou_list_friends($args = '') {
  * @access public
  * @return void
  */
-function fanfou_init_widget() {
+function fanfou_init_widget()
+{
     // Check for the required API functions
     if (!function_exists('register_sidebar_widget') or !function_exists('register_widget_control')) {
         return;
@@ -698,7 +663,8 @@ function fanfou_init_widget() {
      * @access public
      * @return void
      */
-    function wp_widget_fanfou($args) {
+    function wp_widget_fanfou($args)
+    {
         extract($args);
         $options = get_option('widget_fanfou');
         $title   = empty($options['status_title']) ? _f('Fanfou Tools' ) : $options['status_title'];
@@ -731,7 +697,8 @@ function fanfou_init_widget() {
      * @access public
      * @return void
      */
-    function wp_widget_fanfou_friends($args) {
+    function wp_widget_fanfou_friends($args)
+    {
         extract($args);
         $options = get_option('widget_fanfou');
         $title   = empty($options['friends_title']) ? _f('Fanfou Friends') : $options['friends_title'];
@@ -766,7 +733,8 @@ function fanfou_init_widget() {
      * @access public
      * @return void
      */
-    function wp_widget_fanfou_control() {
+    function wp_widget_fanfou_control()
+    {
         print _f("<p>You can config <strong>Fanfou Tools</strong> from: \n<br/><br/>\n");
         print "<a href='".get_bloginfo('wpurl')."/wp-admin/admin.php?page=fanfou-tools.php'>Fanfou Tools Options</a></p>\n";
         print "<br/><br/>\n";
@@ -802,7 +770,8 @@ function fanfou_init_widget() {
      * @access public
      * @return void
      */
-    function wp_widget_fanfou_friends_control() {
+    function wp_widget_fanfou_friends_control()
+    {
         $options = $newoptions = get_option('widget_fanfou');
         if ($_POST["fanfou-submit"] ) {
             $newoptions['friends_title']       = strip_tags(stripslashes($_POST['friends-title']));
@@ -833,7 +802,6 @@ function fanfou_init_widget() {
     register_sidebar_widget('Fanfou Friends', 'wp_widget_fanfou_friends');
     register_widget_control('Fanfou Friends', 'wp_widget_fanfou_friends_control');
 }
-
 
 // Delay plugin execution to ensure Dynamic Sidebar has a chance to load first
 add_action('plugins_loaded', 'fanfou_init_widget');

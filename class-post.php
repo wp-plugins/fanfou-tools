@@ -26,52 +26,13 @@
  */
 class FanfouPost
 {
-    // {{{ Properties
-
-    /**
-     * id
-     *
-     * @var mixed
-     * @access public
-     */
     var $id;
-
-    /**
-     * fanfou_id
-     *
-     * @var mixed
-     * @access public
-     */
     var $fanfou_id;
-
-    /**
-     * fanfou_text
-     *
-     * @var mixed
-     * @access public
-     */
     var $fanfou_text;
-
-    /**
-     * fanfou_created_at
-     *
-     * @var mixed
-     * @access public
-     */
     var $fanfou_created_at;
-
-    /**
-     * modified
-     *
-     * @var mixed
-     * @access public
-     */
     var $modified;
 
-    // }}}
-
-
-    // {{{ FanfouPost($fanfou_id, $fanfou_text, $fanfou_created_at = 0)
+    // {{{ __construct($fanfou_id, $fanfou_text, $fanfou_created_at = 0)
 
     /**
      * FanfouPost Construct
@@ -82,7 +43,8 @@ class FanfouPost
      * @access public
      * @return void
      */
-    function FanfouPost($fanfou_id, $fanfou_text, $fanfou_created_at = 0) {
+    function __construct($fanfou_id, $fanfou_text, $fanfou_created_at = 0)
+    {
         $this->id                = null;
         $this->fanfou_id         = $fanfou_id;
         $this->fanfou_text       = $fanfou_text;
@@ -91,7 +53,6 @@ class FanfouPost
     }
 
     // }}}
-
 
     // {{{ date_to_time($date)
 
@@ -102,7 +63,8 @@ class FanfouPost
      * @access public
      * @return void
      */
-    function date_to_time($date) {
+    function date_to_time($date)
+    {
         $parts = explode(' ', $date);
         $gmt   = (int) strtotime($parts[1].' '.$parts[2].', '.$parts[5].' '.$parts[3]);
         // + 8 hours, convert to PRC time
@@ -110,7 +72,6 @@ class FanfouPost
     }
 
     // }}}
-
 
     // {{{ insert()
 
@@ -120,7 +81,8 @@ class FanfouPost
      * @access public
      * @return void
      */
-    function insert() {
+    function insert()
+    {
         global $wpdb, $fanfou;
         $wpdb->query("
             INSERT INTO $wpdb->fanfou
@@ -129,8 +91,8 @@ class FanfouPost
                 '".$wpdb->escape($this->fanfou_id)."',
                 '".$wpdb->escape($this->fanfou_text)."',
                 '".$this->fanfou_created_at."',
-                 ".time().")
-                 ");
+                ".time().")
+                ");
     }
 
     // }}}

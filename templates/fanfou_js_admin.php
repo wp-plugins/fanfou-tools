@@ -51,13 +51,5 @@ function showResponse(id, transport) {
     return false;
 }
 
-var seconds = <?php $fanfou->last_download + $fanfou->download_interval - time();?>
-function timeLeftCounter() {
-    seconds = seconds - 1;
-    if (seconds < 0) {
-         seconds = 0;
-    }
+/* vim: set filetype=javascript expandtab tabstop=4 shiftwidth=4: */
 
-    $('time_left').innerHTML = '( ' + seconds + ' seconds left )';
-    window.setTimeout(timeLeftCounter, 1000);
-}
