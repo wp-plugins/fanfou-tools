@@ -1,3 +1,25 @@
+<?php
+/**
+ * Fanfou Posts Management Panel
+ *
+ * @package Fanfou
+ * @subpackage Posts
+ */
+
+// Saving settings
+if (isset($_POST['fanfou_action']) and $_POST['fanfou_action'] == 'update_settings') {
+    $fanfou->save_settings();
+    print('
+        <div id="message" class="updated fade">
+        <p>'._f('Options updated...').'</p>
+        </div>');
+}
+
+// Checked
+$fanfou_notify_fanfou      = ($fanfou->notify_fanfou == 1) ? ' checked="checked"' : '';
+$fanfou_notify_use_tinyurl = ($fanfou->notify_use_tinyurl == 1) ? ' checked="checked"' : '';
+?>
+
 <div class="wrap">
     <h2>Fanfou Tools v<?php echo FANFOU_TOOLS_VER;?> - <em style="color: gray; font-size: 18px;"><?php echo  _f('Options'); ?></em></h2>
     <?php include_once('option_page_navbar.php');?>
@@ -66,24 +88,24 @@
             <p>
                 <?php echo _f('Select a locale:'); ?>
                 <select name="ff_locale">
-                <?php
-                $current_locale = get_option('fanfou_locale');
-                if (!$current_locale) {
-                    $current_locale = 'default';
-                }
-                $locales = array(
-                    'default' => _f('Automatic selection (default)'),
-                    'en_US'   => _f('English (en_US)'),
-                    'zh_CN'   => _f('Chinese (zh_CN)'),
-                );
-                foreach ($locales as $locale=>$text) {
-                    $selected = '';
-                    if ($current_locale == $locale) {
-                        $selected = " selected='selected'";
-                    }
-                    echo "<option value=\"$locale\"$selected>$text</option>";
-                }
-                ?>
+<?php
+$current_locale = get_option('fanfou_locale');
+if (!$current_locale) {
+    $current_locale = 'default';
+}
+$locales = array(
+    'default' => _f('Automatic selection (default)'),
+    'en_US'   => _f('English (en_US)'),
+    'zh_CN'   => _f('Chinese (zh_CN)'),
+);
+foreach ($locales as $locale=>$text) {
+    $selected = '';
+    if ($current_locale == $locale) {
+        $selected = " selected='selected'";
+    }
+    echo "<option value=\"$locale\"$selected>$text</option>";
+}
+?>
                 </select>
             </p>
         </div>
@@ -93,3 +115,4 @@
         </div>
     </form>
 </div>
+
