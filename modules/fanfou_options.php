@@ -22,7 +22,7 @@ $fanfou_notify_use_tinyurl = ($fanfou->notify_use_tinyurl == 1) ? ' checked="che
 
 <div class="wrap">
     <h2>Fanfou Tools v<?php echo FANFOU_TOOLS_VER;?> - <em style="color: gray; font-size: 18px;"><?php echo  _f('Options'); ?></em></h2>
-    <?php include_once('option_page_navbar.php');?>
+    <?php include_once('tab_navbar.php');?>
     <form id="fanfou-tools" name="fanfou-tools" action="<?php echo get_bloginfo('wpurl'); ?>/wp-admin/admin.php?page=fanfou-tools.php" method="post">
         <input type="hidden" id="fanfou_action" name="fanfou_action" value="update_settings" />
         <p><?php echo _f('For information and updates, please visit:'); ?><br/>

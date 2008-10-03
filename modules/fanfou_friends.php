@@ -1,14 +1,15 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 // Delete friends
-if ($_GET['fanfou-delete-friend'] and $_GET['user_id']) {
-    print('
-        <div id="message" class="updated fade">
-        <p>'._f("Your Fanfou Friend <a href='http://fanfou.com/{$_GET['user_id']}' target='_blank'>{$_GET['user_id']}</a> has been deleted...").'</p>
-        </div>
-        ');
+if (isset($_GET['fanfou_action']) and 'delete' == $_GET['fanfou_action']) {
+    $user_id = trim($_GET['user_id']);
+    if (!$user_id) {
+        wp_die(__('Unknown action.'));
+        return;
+    }
+    $fanfou->delete_friend($user_id);
 }
-
 
 // Load fanfou friends
 $friends_htmlcode = '';
@@ -27,7 +28,13 @@ foreach($friends as $friend) {
     if ($i >= 10) break;
 }
 
-echo "Incoming soon...";
+?>
 
-/* vim: set expandtab tabstop=4 shiftwidth=4: */
+<div class="wrap">
+<h2>Fanfou Tools v<?php echo FANFOU_TOOLS_VER;?> - <em style="color: gray; font-size: 18px;"><?php echo  _f('Last 20 Fanfou Friends'); ?></em></h2>
+<?php include_once('tab_navbar.php');?>
+
+Incoming soon...
+</div>
+
 

@@ -9,7 +9,6 @@ Author URI: http://www.phpvim.net
 License: LGPL
 **/
 
-
 define('FANFOU_TOOLS_VER', '2.0a');
 define('FANFOU_PATH', ABSPATH . PLUGINDIR . '/fanfou-tools');
 
@@ -19,7 +18,6 @@ $fanfou = new Fanfou();
 
 
 // {{{ function _f($key)
-
 /**
  * Translates $message using the `fanfou-tools` locale for $domain. Wrap text
  * strings that you are going to use in calculations with this function.
@@ -35,12 +33,10 @@ function _f($key)
     }
     return __($key, 'fanfou-tools');
 }
-
 // }}}
 
 
 // {{{ fanfou_add_menu
-
 /**
  * fanfou_add_menu
  *
@@ -54,12 +50,10 @@ function fanfou_add_menu()
     add_options_page($title, $title, 10, basename(__FILE__), 'fanfou_admin');
 }
 add_action('admin_menu', 'fanfou_add_menu');
-
 // }}}
 
 
 // {{{ fanfou_init
-
 /**
  * fanfou_init
  *
@@ -96,12 +90,10 @@ function fanfou_init()
     $GLOBALS['locale'] = WPLANG;
 }
 add_action('init', 'fanfou_init');
-
 // }}}
 
 
 // {{{ fanfou_head_admin
-
 /**
  * fanfou_head_admin
  *
@@ -113,12 +105,10 @@ function fanfou_head_admin()
     print("\n<script type=\"text/javascript\" src=\"".get_bloginfo('wpurl')."/index.php?fanfou_action=fanfou_js_code\"></script>");
 }
 add_action('admin_head', 'fanfou_head_admin');
-
 // }}}
 
 
 // {{{ fanfou_request_handler
-
 /**
  * fanfou_request_handler
  *
@@ -140,14 +130,7 @@ function fanfou_request_handler()
 
         case 'fanfou_js_code':
             header('Content-type: text/javascript');
-			require_once FANFOU_PATH . '/modules/fanfou_js_admin.php';
-            exit;
-            break;
-
-        case 'fanfou_delete_friend':
-            $user_id = trim($_GET['user_id']);
-            $fanfou->delete_friend($user_id);
-            header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&fanfou-delete-friend=true&user_id=' . $user_id);
+            require_once FANFOU_PATH . '/modules/fanfou_js_admin.php';
             exit;
             break;
         }
@@ -179,12 +162,10 @@ function fanfou_request_handler()
     }
 }
 add_action('init', 'fanfou_request_handler', 10);
-
 // }}}
 
 
 // {{{ fanfou_post_form
-
 /**
  * fanfou_post_form
  *
@@ -226,12 +207,10 @@ function fanfouCharCount() {
     }
     return $output;
 }
-
 // }}}
 
 
 // {{{ fanfou_write_post_form
-
 /**
  * fanfou_write_post_form
  *
@@ -251,8 +230,7 @@ function fanfou_write_post_form()
 
     if (empty($fanfou->username) or empty($fanfou->password)) {
         print('
-            <p>' . _f('Please enter your <a href="http://fanfou.com">Fanfou</a> account information in your <a href="./admin.php?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '</p>
-        ');
+            <p>' . _f('Please enter your <a href="http://fanfou.com">Fanfou</a> account information in your <a href="./admin.php?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '</p>');
     }
 
     print('
@@ -263,15 +241,12 @@ function fanfou_write_post_form()
                 ' . _f('You can use the code <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.') . ';
             </p>
             '.fanfou_post_form().'
-        </div>
-    ');
+        </div>');
 }
-
 // }}}
 
 
 // {{{ fanfou_admin
-
 /**
  * fanfou_admin
  *
@@ -291,12 +266,10 @@ function fanfou_admin()
     }
     include_once $module;
 }
-
 // }}}
 
 
 // {{{ fanfou_notify_post
-
 /**
  * fanfou_notify_post
  *
@@ -337,12 +310,10 @@ function fanfou_notify_post($post_id = 0)
     add_post_meta($post_id, 'fanfou_marker', '1', true);
 }
 add_action('publish_post', 'fanfou_notify_post');
-
 // }}}
 
 
 // {{{ fanfou_update_posts
-
 /**
  * fanfou_update_posts
  *
@@ -363,8 +334,8 @@ function fanfou_update_posts()
     }
 
     if (is_array($posts) and count($posts) > 0) {
-		// Return the result array
-		$posts = array_reverse($posts);
+        // Return the result array
+        $posts = array_reverse($posts);
 
         $fanfou_ids = array();
         foreach ($posts as $post) {
@@ -386,12 +357,10 @@ function fanfou_update_posts()
     update_option('fanfou_update_hash',   $hash);
     update_option('fanfou_last_download', time());
 }
-
 // }}}
 
 
 // {{{ fanfou_get_posts
-
 /**
  * fanfou_get_posts
  *
@@ -411,7 +380,6 @@ function fanfou_get_posts($sort, $sort_order, $limit)
     $query .= "LIMIT $limit";
     return $wpdb->get_results($query);
 }
-
 // }}}
 
 
@@ -431,7 +399,6 @@ function fanfou_latest_post()
 
 
 // {{{ fanfou_list_posts
-
 /**
  * fanfou_list_posts
  *
@@ -513,12 +480,10 @@ function fanfou_list_posts($args = '')
     else
         return $output;
 }
-
 // }}}
 
 
 // {{{ fanfou_list_friends
-
 /**
  * fanfou_list_friends
  *
@@ -581,7 +546,6 @@ function fanfou_list_friends($args = '')
         return $output;
 
 }
-
 // }}}
 
 
@@ -599,9 +563,7 @@ function fanfou_init_widget()
         return;
     }
 
-
     // {{{ wp_widget_fanfou($args)
-
     /**
      * wp_widget_fanfou
      *
@@ -629,12 +591,9 @@ function fanfou_init_widget()
             echo $after_widget. "\n";
         }
     }
-
     // }}}
 
-
     // {{{ wp_widget_fanfou_friends($args)
-
     /**
      * wp_widget_fanfou_friends
      *
@@ -663,12 +622,9 @@ function fanfou_init_widget()
             echo $after_widget. "\n";
         }
     }
-
     // }}}
 
-
     // {{{ wp_widget_fanfou_control()
-
     /**
      * wp_widget_fanfou_control
      *
@@ -703,12 +659,9 @@ function fanfou_init_widget()
 <?php
 
     }
-
     // }}}
 
-
     // {{{ wp_widget_fanfou_friends_control
-
     /**
      * wp_widget_fanfou_friends_control
      *
@@ -736,9 +689,7 @@ function fanfou_init_widget()
         <input type="hidden" id="fanfou-submit" name="fanfou-submit" value="1" />
 <?php
     }
-
     // }}}
-
 
     // Tell Dynamic Sidebar about our new widget and its control
     register_sidebar_widget('Fanfou Tools',   'wp_widget_fanfou');

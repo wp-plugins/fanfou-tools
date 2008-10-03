@@ -30,7 +30,7 @@ $posts_columns = array(
 
 <div class="wrap">
 <h2>Fanfou Tools v<?php echo FANFOU_TOOLS_VER;?> - <em style="color: gray; font-size: 18px;"><?php echo  _f('Last 20 Fanfou Status'); ?></em></h2>
-<?php include_once('option_page_navbar.php');?>
+<?php include_once('tab_navbar.php');?>
 
 
 <div class="submit">
@@ -77,7 +77,7 @@ if ($posts) {
             <td>
                 <span title="<?php echo $post->fanfou_text;?>"><?php echo $post->fanfou_text; ?></span><br/><br/>
                 <span class="view"><a href="http://fanfou.com/statuses/<?php echo $post->fanfou_id; ?>" target="_blank"><?php _e('View', 'fanfou-tools'); ?></a> |</span>
-                <span class="delete"><a href='./admin.php?page=fanfou-tools.php&p=posts&fanfou_action=delete&id=<?php echo $post->id;?>&fid=<?php echo $post->fanfou_id;?>'><?php echo _f('Delete');?></a></span>
+                <span class="delete"><a href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=delete&id=<?php echo $post->id;?>&fid=<?php echo $post->fanfou_id;?>'><?php echo _f('Delete');?></a></span>
             </td>
 <?php
                 break;
