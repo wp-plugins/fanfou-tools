@@ -140,7 +140,7 @@ function fanfou_request_handler()
 
         case 'fanfou_js_code':
             header('Content-type: text/javascript');
-			require_once FANFOU_PATH . '/templates/fanfou_js_admin.php';
+			require_once FANFOU_PATH . '/modules/fanfou_js_admin.php';
             exit;
             break;
 
@@ -149,8 +149,6 @@ function fanfou_request_handler()
             $fanfou->delete_friend($user_id);
             header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&fanfou-delete-friend=true&user_id=' . $user_id);
             exit;
-            break;
-        default:
             break;
         }
     }
@@ -284,67 +282,14 @@ function fanfou_admin()
 {
     global $wpdb, $fanfou;
 
-    $subpage = !isset($_GET['tab']) ? 'options' : strtolower($_GET['tab']);
+    $tabPage = !isset($_GET['tab']) ? 'options' : trim(strtolower($_GET['tab']));
 
     // Check and include module file
-    $module = FANFOU_PATH . '/templates/fanfou_' . $subpage . '.php';
-    if (!$subpage or !file_exists($module)) {
-        fanfou_admin_options();
-        return;
+    $module = FANFOU_PATH . '/modules/fanfou_' . $tabPage . '.php';
+    if (!file_exists($module)) {
+        $module = FANFOU_PATH . '/modules/fanfou_options.php';
     }
     include_once $module;
-
-
-    /**
-    switch ($subpage) {
-    default:
-    case "":
-        fanfou_admin_options();
-        break;
-    case "posts":
-        require_once FANFOU_PATH . '/templates/fanfou_posts.php';
-        break;
-    case "friends":
-        require_once FANFOU_PATH . '/templates/fanfou_friends.php'
-        //fanfou_admin_friends();
-        break;
-    case "newpost":
-        require_once FANFOU_PATH . '/templates/fanfou_newpost.php';
-        break;
-    }
-    return;
-    **/
-}
-
-// }}}
-
-
-// {{{ fanfou_admin_options
-
-/**
- * fanfou_admin_options
- *
- * @access public
- * @return void
- */
-function fanfou_admin_options()
-{
-    global $fanfou;
-    // Saving settings
-    if (isset($_POST['fanfou_action']) and $_POST['fanfou_action'] == 'update_settings') {
-        $fanfou->save_settings();
-        print('
-            <div id="message" class="updated fade">
-                <p>'._f('Options updated...').'</p>
-            </div>
-        ');
-    }
-
-    // Checked
-    $fanfou_notify_fanfou      = ($fanfou->notify_fanfou == 1) ? ' checked="checked"' : '';
-    $fanfou_notify_use_tinyurl = ($fanfou->notify_use_tinyurl == 1) ? ' checked="checked"' : '';
-
-	require_once (FANFOU_PATH .  "/templates/fanfou_options.php");
 }
 
 // }}}
