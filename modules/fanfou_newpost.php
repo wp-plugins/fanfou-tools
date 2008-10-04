@@ -1,14 +1,25 @@
-        <div class="wrap">
-            '.fanfou_post_form().'
-        </div>
-
-
+<?php
+if ($_GET['fanfou-posted']) {
+    print('
+        <div id="message" class="updated fade">
+        <p>'._f('Fanfou posted.').'</p>
+        </div>');
+}
+?>
 <div class="wrap">
 
 <h2>Fanfou Tools v<?php echo FANFOU_TOOLS_VER;?> - <em style="color: gray; font-size: 18px;"><?php echo _f('Write New'); ?></em></h2>
 <?php include_once('tab_navbar.php');?>
+
+<?php
+// check username and password
+if (!$fanfou->username or !$fanfou->password) {
+    print('<p style="color: red;">' . _f('Please enter your <a href="http://fanfou.com">fanfou.com</a> account information in <a href="./admin.php?page=fanfou-tools.php">Options</a> page.') . '</p>');
+}
+?>
+
 <p>
-<?php echo _f('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">Fanfou</a> using the account information in your <a href="./admin.php?page=fanfou-tools.php">Fanfou Tools Options</a>.');?><br/>
+<?php echo _f('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">fanfou.com</a> using the account information saved in <a href="./admin.php?page=fanfou-tools.php">Options</a> page.');?><br/>
 <?php echo _f('You can use the UBBCode <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.');?>
 </p>
 

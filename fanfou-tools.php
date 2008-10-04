@@ -172,51 +172,6 @@ add_action('init', 'fanfou_request_handler', 10);
 // }}}
 
 
-// {{{ fanfou_post_form
-/**
- * fanfou_post_form
- *
- * @access public
- * @return void
- */
-function fanfou_post_form()
-{
-    $output = '';
-    if (current_user_can('publish_posts')) {
-        $output .= '
-            <form action="'.get_bloginfo('wpurl').'/wp-admin/post-new.php?page=fanfou-tools.php" method="post" id="fanfou_post_form">
-            <fieldset>
-            <p><textarea type="text" cols="60" rows="5" maxlength="140" id="fanfou_status_text" name="fanfou_status_text" onkeyup="fanfouCharCount();"></textarea></p>
-            <input type="hidden" name="fanfou_action" value="fanfou_post_admin" />
-            <script type="text/javascript">
-//<![CDATA[
-function fanfouCharCount() {
-    var count = document.getElementById("fanfou_status_text").value.length;
-    if (count > 0) {
-        document.getElementById("fanfou_char_count").innerHTML = (140 - count) + "'._f(' characters remaining').'";
-    }
-    else {
-        document.getElementById("fanfou_char_count").innerHTML = "";
-    }
-    }
-    setTimeout("fanfouCharCount();", 500);
-    document.getElementById("fanfou_post_form").setAttribute("autocomplete", "off");
-    //]]>
-            </script>
-            <p>
-                <input type="submit" id="fanfou_submit" name="fanfou_submit" value="'._f('Post Fanfou Status!').'" />
-                <span id="fanfou_char_count"></span>
-            </p>
-            <div class="clear"></div>
-            </fieldset>
-            </form>
-        ';
-    }
-    return $output;
-}
-// }}}
-
-
 // {{{ fanfou_write_post_form
 /**
  * fanfou_write_post_form
@@ -227,13 +182,6 @@ function fanfouCharCount() {
 function fanfou_write_post_form()
 {
     global $fanfou;
-    if ($_GET['fanfou-posted']) {
-        print('
-            <div id="message" class="updated fade">
-                <p>'._f('Fanfou posted.').'</p>
-            </div>
-        ');
-    }
 
     if (empty($fanfou->username) or empty($fanfou->password)) {
         print('
