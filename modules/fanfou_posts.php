@@ -34,7 +34,8 @@ $posts_columns = array(
 
 
 <div class="submit">
-    <input type="button" value="<?php echo _f("Synchronize");?>" onclick="location.href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=update_posts'" />
+    <input type="button" value="<?php echo _f("Check latest");?>" onclick="location.href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=update_posts'" />&nbsp;
+    <input type="button" value="<?php echo _f("Synchronize");?>" onclick="location.href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=synchronize_posts'" />
 </div>
 
 <br style="clear:both;" />
