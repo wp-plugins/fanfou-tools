@@ -1,20 +1,4 @@
 <?php
-
-// Copyright (c) 2007 Verdana Mu. All rights reserved.
-//
-// Released under the LGPL license
-// http://www.gnu.org/licenses/lgpl.txt
-//
-// This is an add-on for WordPress
-// http://wordpress.org
-//
-// **********************************************************************
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// **********************************************************************
-
-
 /**
  * Class FanfouPost
  *
