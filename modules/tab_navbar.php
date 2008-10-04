@@ -28,7 +28,7 @@ $followersCount = 0;
 <li><a <?php echo $c1;?>href="./admin.php?page=fanfou-tools.php"><?php echo _f("Options");?></a> |</li>
 <li><a <?php echo $c2;?>href="./admin.php?page=fanfou-tools.php&tab=posts"><?php printf(_f("Posts(%d)"), $postsCount);?></a> |</li>
 <li><a <?php echo $c3;?>href="./admin.php?page=fanfou-tools.php&tab=friends"><?php printf(_f("Friends(%d)"), $friendsCount);?></a> |</li>
-<li><a <?php echo $c4;?>href="./admin.php?page=fanfou-tools.php&tab=followers"><?php printf(_f("Followers(%d)"), $followersCount);?></a> |</li>
+<!--<li><a <?php echo $c4;?>href="./admin.php?page=fanfou-tools.php&tab=followers"><?php printf(_f("Followers(%d)"), $followersCount);?></a> |</li>-->
 <li><a <?php echo $c5;?>href="./admin.php?page=fanfou-tools.php&tab=newpost"><?php echo _f("Write New");?></a></li>
 </ul>
 <div style="clear: both"></div>
