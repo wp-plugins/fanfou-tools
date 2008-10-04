@@ -6,6 +6,7 @@ $Id$
 $HeadURL$
 
 Changes with 1.1
+	* 加密用户的密码
 	* 修正 TinyURL 网站无法连接时报错的问题
 	* 修改 Post Notifier 的格式，增加多个实用的参数，老的方式令人迷惑且实际上无法使用
 	* 增加 API fanfou_latest_post()，显示最新一条消息

@@ -121,10 +121,10 @@ function fanfou_request_handler()
 
     if (!empty($_GET['fanfou_action'])) {
         switch ($_GET['fanfou_action']) {
-        case 'fanfou_update_posts':
+        case 'update_posts':
             remove_action('shutdown', 'fanfou_update_posts');
             fanfou_update_posts();
-            header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&fanfou-updated=true');
+            header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&tab=posts');
             exit;
             break;
 
@@ -327,16 +327,17 @@ function fanfou_update_posts()
         exit;
     }
 
-    // Load user messages
+    // try fetch something
     $hash = $fanfou->get_user_timeline($posts);
     if ((null == $hash) or ($hash == get_option('fanfou_update_hash'))) {
+        // just return and don't display any error message, if error while
+        // fetching fanfou status
         return;
     }
 
     if (is_array($posts) and count($posts) > 0) {
-        // Return the result array
-        $posts = array_reverse($posts);
-
+        // reverse the result array
+        $posts      = array_reverse($posts);
         $fanfou_ids = array();
         foreach ($posts as $post) {
             $fanfou_ids[] = $wpdb->escape($post->id);

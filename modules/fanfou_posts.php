@@ -7,7 +7,7 @@
  */
 
 // Delete the fanfou status
-if (isset($_GET['fanfou_action']) and 'delete' == $_GET['fanfou_action']) {
+if (isset($_GET['fanfou_action']) and 'delete_post' == $_GET['fanfou_action']) {
     $id  = (isset($_GET['id']) and is_numeric($_GET['id'])) ? intval($_GET['id']) : 0;
     $fid = isset($_GET['fid']) ? trim($_GET['fid']) : '';
     if (!$id or !$fid) {
@@ -34,7 +34,7 @@ $posts_columns = array(
 
 
 <div class="submit">
-    <input type="button" class="" name="" value="<?php echo _f("Synchronize");?>" />
+    <input type="button" value="<?php echo _f("Synchronize");?>" onclick="location.href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=update_posts'" />
 </div>
 
 <br style="clear:both;" />
@@ -77,7 +77,7 @@ if ($posts) {
             <td>
                 <span title="<?php echo $post->fanfou_text;?>"><?php echo $post->fanfou_text; ?></span><br/><br/>
                 <span class="view"><a href="http://fanfou.com/statuses/<?php echo $post->fanfou_id; ?>" target="_blank"><?php _e('View', 'fanfou-tools'); ?></a> |</span>
-                <span class="delete"><a href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=delete&id=<?php echo $post->id;?>&fid=<?php echo $post->fanfou_id;?>'><?php echo _f('Delete');?></a></span>
+                <span class="delete"><a href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=delete_post&id=<?php echo $post->id;?>&fid=<?php echo $post->fanfou_id;?>'><?php echo _f('Delete');?></a></span>
             </td>
 <?php
                 break;

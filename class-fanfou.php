@@ -19,10 +19,9 @@ class Fanfou
     var $json;
     var $snoop;
     var $snoop_options = array(
-        'agent'      => 'Fanfou Tools - http://www.phpvim.net',
-        'version'    => '1.2.3',
-        'client'     => 'Fanfou Tools',
-        'client-url' => 'http://www.phpvim.net/wordpress/fanfou-tools.html',
+        'agent'      => 'Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1)',
+        'referer'    => 'http://www.phpvim.net', // will be change to your default host, or deleted
+        'rawheaders' => array('Pragma' => 'no-cache'),
     );
 
     // {{{ Construct
@@ -34,7 +33,7 @@ class Fanfou
      * @access public
      * @return void
      */
-    function Fanfou()
+    function __construct()
     {
         // Load options
         $this->get_settings();
@@ -44,31 +43,27 @@ class Fanfou
     }
     // }}}
 
-    // {{{ init_snoopy($username = '', $password = '')
+    // {{{ init_snoopy()
     /**
      * init_snoopy
      *
-     * @param  string $username
-     * @param  string $password
      * @access public
      * @return void
      */
-    function init_snoopy($username = '', $password = '')
+    function init_snoopy()
     {
         if (is_object($this->snoop) and is_a($this->snoop, 'Snoopy')) {
             return;
         }
 
-        $this->snoop             = new Snoopy;
-        $this->snoop->agent      = $this->snoop_options['agent'];
-        $this->snoop->rawheaders = array(
-            'X-Twitter-Client'         => $this->snoop_options['client'],
-            'X-Twitter-Client-Version' => $this->snoop_options['version'],
-            'X-Twitter-Client-URL'     => $this->snoop_options['client-url']
-        );
+        $this->snoop = new Snoopy;
+        foreach ($this->snoop_options as $key=> $val) {
+            $this->snoop->$key = $val;
+        }
 
-        if ($username) $this->snoop->user = $username;
-        if ($password) $this->snoop->pass = $password;
+        // Http basic auth
+        $this->snoop->user = $this->username;
+        $this->snoop->pass = $this->password;
     }
     // }}}
 
@@ -141,23 +136,6 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
     }
     // }}}
 
-    // {{{ login($username, $password)
-    /**
-     * login fanfou with given username and password
-     *
-     * @param mixed $username
-     * @param mixed $password
-     * @access public
-     * @return void
-     */
-    function login($username, $password)
-    {
-        $this->init_snoopy($username, $password);
-        $this->snoop->fetch('http://api.fanfou.com/statuses/user_timeline.json');
-        return (boolean) strpos($this->snoop->response_code, '200');
-    }
-    // }}}
-
     // {{{ tinyurl($text)
     /**
      * tinyurl
@@ -173,6 +151,30 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         };
         return preg_replace('|\[tiny\](.*?)\[/tiny\]|ise', "TinyURL::transform('\\1')", $text);
     }
+    // }}}
+
+    // {{{ login($username, $password)
+    /**
+     * login fanfou with given username and password
+     *
+     * @param mixed $username
+     * @param mixed $password
+     * @access public
+     * @return void
+     */
+    function login($username, $password)
+    {
+        $this->init_snoopy();
+        // init_snoopy 调用后，程序保存的帐号密码是从数据库中读取的。
+        // 而这里使用 login 函数提供的帐号密码替换掉
+        $this->snoop->user = $username;
+        $this->snoop->pass = $password;
+
+        $this->snoop->fetch('http://api.fanfou.com/statuses/user_timeline.json');
+        return (boolean) strpos($this->snoop->response_code, '200 OK');
+    }
+    // }}}
+
     // }}}
 
     // {{{ post($text)
@@ -193,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         $text = $this->tinyurl($text);
         var_dump($text);
 
-        $this->init_snoopy($this->username, $this->password);
+        $this->init_snoopy();
         $this->snoop->submit(
             'http://api.fanfou.com/statuses/update.json',
             array(
@@ -225,21 +227,19 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
     function delete_post($id, $fanfou_id)
     {
         global $wpdb;
-
         if ($id and $fanfou_id) {
-            // delete post from Fanfou
-            $this->init_snoopy($this->username, $this->password);
-            $this->snoop->fetch("http://api.fanfou.com/statuses/destroy.json?id=$fanfou_id");
+            // delete post from fanfou.com
+            $this->init_snoopy();
+            $url = "http://api.fanfou.com/statuses/destroy/$fanfou_id.xml";
+            if ($this->snoop->fetch($url)) {
+                if (strpos($this->snoop->response_code, '200 OK')) {
+                    update_option('fanfou_update_hash'  , '');
+                    update_option('fanfou_last_download', strtotime('-8 minutes'));
 
-            if (strpos($this->snoop->response_code, '200')) {
-                update_option('fanfou_update_hash'  , '');
-                update_option('fanfou_last_download', strtotime('-8 minutes'));
-
-                // delete post from WordPress Cache
-                $result = $wpdb->query("DELETE FROM `$wpdb->fanfou` WHERE `id` = $id AND `fanfou_id` = '$fanfou_id'");
-                return true;
+                    // delete post from WordPress Cache
+                    $result = $wpdb->query("DELETE FROM `$wpdb->fanfou` WHERE `id` = $id AND `fanfou_id` = '$fanfou_id'");
+                }
             }
-
         }
     }
     // }}}
@@ -256,13 +256,13 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
     {
         if ($user_id) {
             // delete friend
-            $this->init_snoopy($this->username, $this->password);
-            $this->snoop->fetch("http://api.fanfou.com/friendships/destroy.json?id=$user_id");
-            var_dump($this->snoop->results);
-            var_dump($this->snoop->response_code);
+            $this->init_snoopy();
+            $url = "http://api.fanfou.com/friendships/destroy/$user_id.xml";
+            if ($this->snoop->fetch($url)) {
+                // successful
+            }
         }
     }
-
     // }}}
 
     // {{{ get_friends()
@@ -291,25 +291,20 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
      * get_user_timeline
      *
      * @param  array    $posts
-     * @param  integer  $count
      * @access public
      * @return void
      */
     function get_user_timeline(&$posts)
     {
-        if (!$count) {
-            $count = 10;
-        }
-
+        $url = "http://api.fanfou.com/statuses/user_timeline.json?id={$this->username}";
         $this->init_snoopy();
-        $this->snoop->fetch("http://api.fanfou.com/statuses/user_timeline.json?id={$this->username}");
-        if (!strpos($this->snoop->response_code, '200')) {
-            return;
+        if ($this->snoop->fetch($url)) {
+            if (strpos($this->snoop->response_code, '200 OK')) {
+                $hash  = md5($this->snoop->results);
+                $posts = $this->json->decode($this->snoop->results);
+                return $hash;
+            }
         }
-
-        $hash = md5($this->snoop->results);
-        $posts = $this->json->decode($this->snoop->results);
-        return $hash;
     }
     // }}}
 
