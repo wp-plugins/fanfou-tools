@@ -128,6 +128,13 @@ function fanfou_request_handler()
             exit;
             break;
 
+        case 'synchronize_posts':
+            remove_action('shutdown', 'fanfou_update_posts');
+            fanfou_update_posts(true);
+            header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&tab=posts');
+            exit;
+            break;
+
         case 'fanfou_js_code':
             header('Content-type: text/javascript');
             require_once FANFOU_PATH . '/modules/fanfou_js_admin.php';
@@ -317,10 +324,11 @@ add_action('publish_post', 'fanfou_notify_post');
 /**
  * fanfou_update_posts
  *
+ * @param mixed $truncate truncate the fanfou_posts table
  * @access public
  * @return void
  */
-function fanfou_update_posts()
+function fanfou_update_posts($truncate = false)
 {
     global $wpdb, $fanfou;
     if (!$fanfou->username or !$fanfou->password) {
@@ -337,7 +345,18 @@ function fanfou_update_posts()
 
     if (is_array($posts) and count($posts) > 0) {
         // reverse the result array
-        $posts      = array_reverse($posts);
+        $posts = array_reverse($posts);
+        if ($truncate) {
+            $wpdb->query("TRUNCATE TABLE `$wpdb->fanfou`");
+            foreach ($posts as $post) {
+                $status = new FanfouPost($post->id, $post->text, $post->created_at);
+                $status->insert();
+            }
+            return;
+        }
+
+        // from here, we just checkout the latest fanfou post, and insert to
+        // database
         $fanfou_ids = array();
         foreach ($posts as $post) {
             $fanfou_ids[] = $wpdb->escape($post->id);
