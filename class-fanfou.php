@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         add_option('fanfou_username',               '');
         add_option('fanfou_password',               '');
         add_option('fanfou_notify_fanfou',          1);
-        add_option('fanfou_notify_format',          _f('New Blog Post: %postname% - %permalink%'));
+        add_option('fanfou_notify_format',          'New Blog Post: %postname% - %permalink%');
         add_option('fanfou_notify_use_tinyurl',     0);
         add_option('fanfou_sidebar_status_num',     5);
         add_option('fanfou_sidebar_friends_num',    10);
@@ -173,8 +173,6 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
         $this->snoop->fetch('http://api.fanfou.com/statuses/user_timeline.json');
         return (boolean) strpos($this->snoop->response_code, '200 OK');
     }
-    // }}}
-
     // }}}
 
     // {{{ post($text)
