@@ -19,9 +19,7 @@ class Fanfou
     var $json;
     var $snoop;
     var $snoop_options = array(
-        'agent'      => 'Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1)',
-        'referer'    => 'http://www.phpvim.net', // will be change to your default host, or deleted
-        'rawheaders' => array('Pragma' => 'no-cache'),
+        'rawheaders' => array(),
     );
 
     // {{{ Construct
@@ -40,6 +38,9 @@ class Fanfou
 
         // Initialize Services_JSON
         $this->json = new Services_JSON();
+
+        // Expires
+        //$this->snoop_options['rawheaders']['Expires'] = gmdate('D, d M Y H:i:s', 0) . ' GMT';
     }
     // }}}
 
@@ -191,8 +192,6 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
 
         // Convert TinyURL
         $text = $this->tinyurl($text);
-        var_dump($text);
-
         $this->init_snoopy();
         $this->snoop->submit(
             'http://api.fanfou.com/statuses/update.json',

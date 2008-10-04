@@ -344,30 +344,24 @@ function fanfou_update_posts($truncate = false)
     }
 
     if (is_array($posts) and count($posts) > 0) {
+        $latest_ids = array();
+        $exists_ids = array();
+
         // reverse the result array
         $posts = array_reverse($posts);
+        foreach ($posts as $post) {
+            $latest_ids[] = $wpdb->escape($post->id);
+        }
+
         if ($truncate) {
             $wpdb->query("TRUNCATE TABLE `$wpdb->fanfou`");
-            foreach ($posts as $post) {
-                $status = new FanfouPost($post->id, $post->text, $post->created_at);
-                $status->insert();
-            }
-            return;
+        }
+        else {
+            $exists_ids = $wpdb->get_col("SELECT `fanfou_id` FROM `$wpdb->fanfou` WHERE `fanfou_id` IN ('".implode("', '", $latest_ids)."')");
         }
 
-        // from here, we just checkout the latest fanfou post, and insert to
-        // database
-        $fanfou_ids = array();
         foreach ($posts as $post) {
-            $fanfou_ids[] = $wpdb->escape($post->id);
-        }
-
-        $existing_ids = $wpdb->get_col("
-            SELECT `fanfou_id` FROM `$wpdb->fanfou`
-            WHERE `fanfou_id` IN ('".implode("', '", $fanfou_ids)."')");
-
-        foreach ($posts as $post) {
-            if (!$existing_ids or !in_array($post->id, $existing_ids)) {
+            if ($truncate or !in_array($post->id, $exists_ids)) {
                 $status = new FanfouPost($post->id, $post->text, $post->created_at);
                 $status->insert();
             }
