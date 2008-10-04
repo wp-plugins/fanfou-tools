@@ -5,6 +5,10 @@ Fanfou Tools - ChangeLog
 $Id$
 $HeadURL$
 
+Changes with 1.2
+	* 增加一个同步功能（在读取新消息之前，先清空本地的 fanfou 数据表）
+	* 更新中文翻译
+
 Changes with 1.1
 	* 修正 TinyURL 网站无法连接时报错的问题
 	* 修改 Post Notifier 的格式，增加多个实用的参数，老的方式令人迷惑且实际上无法使用
