@@ -54,8 +54,10 @@ document.getElementById("fanfou_post_form").setAttribute("autocomplete", "off");
 //]]>
 </script>
 <p>
-<input type="submit" id="fanfou_submit" name="fanfou_submit" value="<?php echo _f('Post Fanfou Status!');?>" />
+<div class="submit">
+<input type="submit" id="fanfou_submit" name="fanfou_submit" value="<?php echo _f('Post Fanfou Status!');?>" /> &nbsp;
 <span id="fanfou_char_count"></span>
+</div>
 </p>
 <div class="clear"></div>
 </fieldset>
