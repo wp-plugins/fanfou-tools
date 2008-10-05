@@ -5,6 +5,8 @@ if ($_GET['fanfou-posted']) {
         <p>'._f('Fanfou posted.').'</p>
         </div>');
 }
+
+$actionurl = get_bloginfo("wpurl") . "/wp-admin/admin.php?page=fanfou-tools.php";
 ?>
 <div class="wrap">
 
@@ -23,20 +25,28 @@ if (!$fanfou->username or !$fanfou->password) {
 <?php echo _f('You can use the UBBCode <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.');?>
 </p>
 
-<form action="'.get_bloginfo('wpurl').'/wp-admin/post-new.php?page=fanfou-tools.php" method="post" id="fanfou_post_form">
+<form action="<?php echo $actionurl;?>" method="post" id="fanfou_post_form">
 <fieldset>
 <p><textarea type="text" cols="60" rows="5" maxlength="140" id="fanfou_status_text" name="fanfou_status_text" onkeyup="fanfouCharCount();"></textarea></p>
 <input type="hidden" name="fanfou_action" value="post_status" />
 <script type="text/javascript">
 //<![CDATA[
-function fanfouCharCount()
-{
+function fanfouCharCount() {
     var count = document.getElementById("fanfou_status_text").value.length;
-    if (count > 0) {
-        document.getElementById("fanfou_char_count").innerHTML = (140 - count) + "<?php echo _f(' characters remaining');?>";
+    if (count >= 0) {
+        var remaining = 140 - count;
+        var msg1 = "<?php echo _f('%d characters remaining');?>";
+        var msg2 = "<?php echo _f('Exceeded maximum number of characters');?>";
+
+        if (remaining >= 0) {
+            msg = "<span style='color: #999999'>" + msg1.replace(/%d/g, " <strong style='color: #222222'>" + remaining + "</strong> ") + "</span>";
+        } else {
+            msg = "<span style='color: #CC0000'>" + msg2 + "</span>";
+        }
+        document.getElementById("fanfou_char_count").innerHTML = msg;
     }
     else {
-        document.getElementById("fanfou_char_count").innerHTML = "";
+        document.getElementById("fanfou_char_count").innerHTML = "<0";
     }
 }
 setTimeout("fanfouCharCount();", 500);

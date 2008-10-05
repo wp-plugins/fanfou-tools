@@ -119,7 +119,7 @@ function fanfou_request_handler()
 {
     global $fanfou;
 
-    if (!empty($_GET['fanfou_action'])) {
+    if ($_GET['fanfou_action']) {
         switch ($_GET['fanfou_action']) {
         case 'update_posts':
             remove_action('shutdown', 'fanfou_update_posts');
@@ -143,7 +143,7 @@ function fanfou_request_handler()
         }
     }
 
-    if (!empty($_POST['fanfou_action'])) {
+    if ($_POST['fanfou_action']) {
         switch ($_POST['fanfou_action']) {
         case 'fanfou_login_test':
             $username = trim(stripslashes($_POST['ff_username']));
@@ -156,10 +156,10 @@ function fanfou_request_handler()
             }
             break;
 
-        case 'fanfou_post_admin':
+        case 'post_status':
             $text = isset($_POST['fanfou_status_text']) ? trim(stripslashes($_POST['fanfou_status_text'])) : null;
-            if (!empty($text) and $fanfou->post($text)) {
-                header('Location: '.get_bloginfo('wpurl').'/wp-admin/post-new.php?page=fanfou-tools.php&fanfou-posted=true');
+            if (strlen($text) and $fanfou->post($text)) {
+                header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&tab=newpost&fanfou-posted=true');;
             }
             else {
                 wp_die(_f('Oops, your fanfou status was not posted. Please check your username and password.'));
@@ -169,35 +169,6 @@ function fanfou_request_handler()
     }
 }
 add_action('init', 'fanfou_request_handler', 10);
-// }}}
-
-
-// {{{ fanfou_write_post_form
-/**
- * fanfou_write_post_form
- *
- * @access public
- * @return void
- */
-function fanfou_write_post_form()
-{
-    global $fanfou;
-
-    if (empty($fanfou->username) or empty($fanfou->password)) {
-        print('
-            <p>' . _f('Please enter your <a href="http://fanfou.com">Fanfou</a> account information in your <a href="./admin.php?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '</p>');
-    }
-
-    print('
-        <div class="wrap">
-            <h2>' . _f('Write Fanfou') . '</h2>
-            <p>
-                ' . _f('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">Fanfou</a> using the account information in your <a href="./admin?page=fanfou-tools.php">Fanfou Tools Options</a>.') . '<br/>
-                ' . _f('You can use the code <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.') . ';
-            </p>
-            '.fanfou_post_form().'
-        </div>');
-}
 // }}}
 
 
