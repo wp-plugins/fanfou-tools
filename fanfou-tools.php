@@ -2,14 +2,14 @@
 /**
 Plugin Name: FanFou Tools
 Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools.html
-Description: FanFou Tools for WordPress Blog...<a href="./admin.php?page=fanfou-tools.php">Configuration Page</a>.
-Version: 1.2
+Description: FanFou Tools for WordPress Blog...
+Version: 1.3
 Author: Verdana Mu
 Author URI: http://www.phpvim.net
 License: LGPL
 **/
 
-define('FANFOU_TOOLS_VER', '1.2');
+define('FANFOU_TOOLS_VER', '1.3');
 define('FANFOU_PATH', ABSPATH . PLUGINDIR . '/fanfou-tools');
 
 require_once FANFOU_PATH . '/class-fanfou.php';
@@ -48,6 +48,10 @@ function fanfou_add_menu()
     // Options page
     $title = _f("Fanfou Tools");
     add_options_page($title, $title, 10, basename(__FILE__), 'fanfou_admin');
+
+    if (current_user_can('manage_options')) {
+        add_filter('plugin_action_links', 'plugin_action_links', 10, 2);
+    }
 }
 add_action('admin_menu', 'fanfou_add_menu');
 // }}}
@@ -108,6 +112,24 @@ add_action('admin_head', 'fanfou_head_admin');
 // }}}
 
 
+/**
+ * plugin_action_links
+ * Handler for the 'plugin_action_links' hook. Adds a "Settings" link to this plugin's entry
+ * on the plugin list.
+ *
+ * @param mixed $links
+ * @param mixed $file
+ * @access public
+ * @return void
+ */
+function plugin_action_links($links, $file) {
+    if ($file == plugin_basename(__FILE__)) {
+        $links[] = "<a href='./options-general.php?page=fanfou-tools.php'>" . __('Settings') . "</a>";
+    }
+    return $links;
+}
+
+
 // {{{ fanfou_request_handler
 /**
  * fanfou_request_handler
@@ -124,14 +146,14 @@ function fanfou_request_handler()
         case 'update_posts':
             remove_action('shutdown', 'fanfou_update_posts');
             fanfou_update_posts();
-            header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&tab=posts');
+            header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&tab=posts');
             exit;
             break;
 
         case 'synchronize_posts':
             remove_action('shutdown', 'fanfou_update_posts');
             fanfou_update_posts(true);
-            header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&tab=posts');
+            header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&tab=posts');
             exit;
             break;
 
@@ -159,7 +181,7 @@ function fanfou_request_handler()
         case 'post_status':
             $text = isset($_POST['fanfou_status_text']) ? trim(stripslashes($_POST['fanfou_status_text'])) : null;
             if (strlen($text) and $fanfou->post($text)) {
-                header('Location: '.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&tab=newpost&fanfou-posted=true');;
+                header('Location: '.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&tab=newpost&fanfou-posted=true');;
             }
             else {
                 wp_die(_f('Oops, your fanfou status was not posted. Please check your username and password.'));
@@ -205,9 +227,21 @@ function fanfou_admin()
 function fanfou_notify_post($post_id = 0)
 {
     global $fanfou;
-
     if ($fanfou->notify_fanfou == 0 or $post_id == 0 or get_post_meta($post_id, 'fanfou_marker', true) == '1') {
         return;
+    }
+
+    // skip some categories
+    if ($fanfou->notify_exclude_categories) {
+        $categories = get_the_category($post_id);
+        if (!empty($categories)) {
+            $foo = explode(',', $fanfou->notify_exclude_categories);
+            foreach ($categories as $category) {
+                if (in_array($category->term_id, $foo)) {
+                    return;
+                }
+            }
+        }
     }
 
     $foo = $fanfou->notify_format;
@@ -225,7 +259,7 @@ function fanfou_notify_post($post_id = 0)
             $permalink = TinyURL::transform($permalink);
         }
 
-       $foo = str_replace('%permalink%', $permalink, $foo);
+        $foo = str_replace('%permalink%', $permalink, $foo);
     }
     if (false !== strpos($foo, '%postname%')) {
         $post = get_post($post_id);
@@ -569,8 +603,9 @@ function fanfou_init_widget()
      */
     function wp_widget_fanfou_control()
     {
-        print _f("<p>You can config <strong>Fanfou Tools</strong> from: \n<br/><br/>\n");
-        print "<a href='".get_bloginfo('wpurl')."/wp-admin/admin.php?page=fanfou-tools.php'>Fanfou Tools Options</a></p>\n";
+        print "<p>" . _f("You can config <strong>Fanfou Tools</strong> from:");
+        print "\n<br/><br/>\n";
+        print "<a href='".get_bloginfo('wpurl')."/wp-admin/options-general.php?page=fanfou-tools.php'>Fanfou Tools Options</a></p>\n";
         print "<br/><br/>\n";
 
         $options = $newoptions = get_option('widget_fanfou');

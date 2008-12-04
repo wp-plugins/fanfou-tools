@@ -120,20 +120,21 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
      */
     function install_options()
     {
-        add_option('fanfou_username',               '');
-        add_option('fanfou_password',               '');
-        add_option('fanfou_notify_fanfou',          1);
-        add_option('fanfou_notify_format',          'New Blog Post: %postname% - %permalink%');
-        add_option('fanfou_notify_use_tinyurl',     0);
-        add_option('fanfou_sidebar_status_num',     5);
-        add_option('fanfou_sidebar_friends_num',    10);
-        add_option('fanfou_date_format',            'Y-m-d H:i');
-        add_option('fanfou_download_interval',      600);
-        add_option('fanfou_last_download',          time() - 600);
-        add_option('fanfou_locale',                 'default');
+        add_option('fanfou_username',					'');
+        add_option('fanfou_password',					'');
+        add_option('fanfou_notify_fanfou',				1);
+        add_option('fanfou_notify_exclude_categories',  '');
+        add_option('fanfou_notify_format',				'New Blog Post: %postname% - %permalink%');
+        add_option('fanfou_notify_use_tinyurl',			0);
+        add_option('fanfou_sidebar_status_num',			5);
+        add_option('fanfou_sidebar_friends_num',		10);
+        add_option('fanfou_date_format',				'Y-m-d H:i');
+        add_option('fanfou_download_interval',			600);
+        add_option('fanfou_last_download',				time() - 600);
+        add_option('fanfou_locale',						'default');
 
-        add_option('fanfou_update_hash',            '');
-	    add_option("fanfou_tools_ver",              FANFOU_TOOLS_VER);
+        add_option('fanfou_update_hash',				'');
+	    add_option("fanfou_tools_ver",					FANFOU_TOOLS_VER);
     }
     // }}}
 
@@ -314,17 +315,18 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
      */
     function get_settings()
     {
-        $this->username            = get_option('fanfou_username');
-        $this->password            = get_option('fanfou_password');
-        $this->notify_fanfou       = (int) get_option('fanfou_notify_fanfou');
-        $this->notify_format       = get_option('fanfou_notify_format');
-        $this->notify_use_tinyurl  = (int) get_option('fanfou_notify_use_tinyurl');
-        $this->date_format         = get_option('fanfou_date_format');
-        $this->sidebar_status_num  = (int) get_option('fanfou_sidebar_status_num');
-        $this->sidebar_friends_num = (int) get_option('fanfou_sidebar_friends_num');
-        $this->download_interval   = (int) get_option('fanfou_download_interval');
-        $this->last_download       = (int) get_option('fanfou_last_download');
-        $this->locale              = get_option('fanfou_locale');
+        $this->username					= get_option('fanfou_username');
+        $this->password					= get_option('fanfou_password');
+        $this->notify_fanfou			= (int) get_option('fanfou_notify_fanfou');
+        $this->notify_exclude_categories= get_option('fanfou_notify_exclude_categories');
+        $this->notify_format			= get_option('fanfou_notify_format');
+        $this->notify_use_tinyurl		= (int) get_option('fanfou_notify_use_tinyurl');
+        $this->date_format				= get_option('fanfou_date_format');
+        $this->sidebar_status_num		= (int) get_option('fanfou_sidebar_status_num');
+        $this->sidebar_friends_num		= (int) get_option('fanfou_sidebar_friends_num');
+        $this->download_interval		= (int) get_option('fanfou_download_interval');
+        $this->last_download			= (int) get_option('fanfou_last_download');
+        $this->locale					= get_option('fanfou_locale');
     }
     // }}}
 
@@ -337,27 +339,41 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
      */
     function save_settings()
     {
-        $this->username            = trim($_POST['ff_username']);
-        $this->password            = trim($_POST['ff_password']);
-        $this->notify_fanfou       = intval(trim($_POST['ff_notify_fanfou']));
-        $this->notify_format       = htmlspecialchars(trim($_POST['ff_notify_format']));
-        $this->notify_use_tinyurl  = intval(trim($_POST['ff_notify_use_tinyurl']));
-        $this->date_format         = trim($_POST['ff_date_format']);
-        $this->sidebar_status_num  = intval(trim($_POST['ff_sidebar_status_num']));
-        $this->sidebar_friends_num = intval(trim($_POST['ff_sidebar_friends_num']));
-        $this->download_interval   = intval(trim($_POST['ff_download_interval']));
-        $this->locale              = $_POST['ff_locale'];
+        $this->username						= trim($_POST['ff_username']);
+        $this->password						= trim($_POST['ff_password']);
+        $this->notify_fanfou				= intval(trim($_POST['ff_notify_fanfou']));
+        $this->notify_format				= htmlspecialchars(trim($_POST['ff_notify_format']));
+        $this->notify_use_tinyurl			= intval(trim($_POST['ff_notify_use_tinyurl']));
+        $this->date_format					= trim($_POST['ff_date_format']);
+        $this->sidebar_status_num			= intval(trim($_POST['ff_sidebar_status_num']));
+        $this->sidebar_friends_num			= intval(trim($_POST['ff_sidebar_friends_num']));
+        $this->download_interval			= intval(trim($_POST['ff_download_interval']));
+        $this->locale						= $_POST['ff_locale'];
 
-        update_option('fanfou_username',            $this->username);
-        update_option('fanfou_password',            $this->password);
-        update_option('fanfou_notify_fanfou',       $this->notify_fanfou);
-        update_option('fanfou_notify_format',       $this->notify_format);
-        update_option('fanfou_notify_use_tinyurl',  $this->notify_use_tinyurl);
-        update_option('fanfou_date_format',         $this->date_format);
-        update_option('fanfou_sidebar_status_num',  $this->sidebar_status_num);
-        update_option('fanfou_sidebar_friends_num', $this->sidebar_friends_num);
-        update_option('fanfou_download_interval',   $this->download_interval);
-        update_option('fanfou_locale',              $this->locale);
+		// format exclude categories ids
+		$str = str_replace('，', ',', trim($_POST['ff_notify_exclude_categories']));
+		$str = str_replace('　', '', $str);
+		$foo = array_unique(explode(',', $str));
+		$baz = array();
+		foreach ($foo as $id) {
+			if (is_numeric($id)) {
+				$baz[] = (int) $id;
+			}
+		}
+		sort($baz);
+        $this->notify_exclude_categories = join(',', $baz);
+
+        update_option('fanfou_username',					$this->username);
+        update_option('fanfou_password',					$this->password);
+        update_option('fanfou_notify_fanfou',				$this->notify_fanfou);
+        update_option('fanfou_notify_exclude_categories',	$this->notify_exclude_categories);
+        update_option('fanfou_notify_format',				$this->notify_format);
+        update_option('fanfou_notify_use_tinyurl',			$this->notify_use_tinyurl);
+        update_option('fanfou_date_format',					$this->date_format);
+        update_option('fanfou_sidebar_status_num',			$this->sidebar_status_num);
+        update_option('fanfou_sidebar_friends_num',			$this->sidebar_friends_num);
+        update_option('fanfou_download_interval',			$this->download_interval);
+        update_option('fanfou_locale',						$this->locale);
     }
     // }}}
 

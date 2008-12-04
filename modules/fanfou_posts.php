@@ -34,8 +34,8 @@ $posts_columns = array(
 
 
 <div class="submit">
-    <input type="button" value="<?php echo _f("Check latest");?>" onclick="location.href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=update_posts'" />&nbsp;
-    <input type="button" value="<?php echo _f("Synchronize");?>" onclick="location.href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=synchronize_posts'" />
+    <input type="button" value="<?php echo _f("Check latest");?>" onclick="location.href='./options-general.php?page=fanfou-tools.php&tab=posts&fanfou_action=update_posts'" />&nbsp;
+    <input type="button" value="<?php echo _f("Synchronize");?>" onclick="location.href='./options-general.php?page=fanfou-tools.php&tab=posts&fanfou_action=synchronize_posts'" />
 </div>
 
 <br style="clear:both;" />
@@ -78,7 +78,7 @@ if ($posts) {
             <td>
                 <span title="<?php echo $post->fanfou_text;?>"><?php echo $post->fanfou_text; ?></span><br/><br/>
                 <span class="view"><a href="http://fanfou.com/statuses/<?php echo $post->fanfou_id; ?>" target="_blank"><?php _e('View', 'fanfou-tools'); ?></a> |</span>
-                <span class="delete"><a href='./admin.php?page=fanfou-tools.php&tab=posts&fanfou_action=delete_post&id=<?php echo $post->id;?>&fid=<?php echo $post->fanfou_id;?>'><?php echo _f('Delete');?></a></span>
+                <span class="delete"><a href='./options-general.php?page=fanfou-tools.php&tab=posts&fanfou_action=delete_post&id=<?php echo $post->id;?>&fid=<?php echo $post->fanfou_id;?>'><?php echo _f('Delete');?></a></span>
             </td>
 <?php
                 break;

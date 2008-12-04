@@ -6,7 +6,7 @@ if ($_GET['fanfou-posted']) {
         </div>');
 }
 
-$actionurl = get_bloginfo("wpurl") . "/wp-admin/admin.php?page=fanfou-tools.php";
+$actionurl = get_bloginfo("wpurl") . "/wp-admin/options-general.php?page=fanfou-tools.php";
 ?>
 <div class="wrap">
 
@@ -16,12 +16,12 @@ $actionurl = get_bloginfo("wpurl") . "/wp-admin/admin.php?page=fanfou-tools.php"
 <?php
 // check username and password
 if (!$fanfou->username or !$fanfou->password) {
-    print('<p style="color: red;">' . _f('Please enter your <a href="http://fanfou.com">fanfou.com</a> account information in <a href="./admin.php?page=fanfou-tools.php">Options</a> page.') . '</p>');
+    print('<p style="color: red;">' . _f('Please enter your <a href="http://fanfou.com">fanfou.com</a> account information in <a href="./options-general.php?page=fanfou-tools.php">Options</a> page.') . '</p>');
 }
 ?>
 
 <p>
-<?php echo _f('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">fanfou.com</a> using the account information saved in <a href="./admin.php?page=fanfou-tools.php">Options</a> page.');?><br/>
+<?php echo _f('This will create a new \'Fanfou\' status in <a href="http://fanfou.com">fanfou.com</a> using the account information saved in <a href="./options-general.php?page=fanfou-tools.php">Options</a> page.');?><br/>
 <?php echo _f('You can use the UBBCode <span style="color: red">[tiny][/tiny]</span> to automatically convert an URL into a Tiny URL.');?>
 </p>
 

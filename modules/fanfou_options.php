@@ -23,7 +23,7 @@ $fanfou_notify_use_tinyurl = ($fanfou->notify_use_tinyurl == 1) ? ' checked="che
 <div class="wrap">
     <h2>Fanfou Tools v<?php echo FANFOU_TOOLS_VER;?> - <em style="color: gray; font-size: 18px;"><?php echo  _f('Options'); ?></em></h2>
     <?php include_once('tab_navbar.php');?>
-    <form id="fanfou-tools" name="fanfou-tools" action="<?php echo get_bloginfo('wpurl'); ?>/wp-admin/admin.php?page=fanfou-tools.php" method="post">
+    <form id="fanfou-tools" name="fanfou-tools" action="<?php echo get_bloginfo('wpurl'); ?>/wp-admin/options-general.php?page=fanfou-tools.php" method="post">
         <input type="hidden" id="fanfou_action" name="fanfou_action" value="update_settings" />
         <p><?php echo _f('For information and updates, please visit:'); ?><br/>
             <a href="http://www.phpvim.net/wordpress/fanfou-tools.html" target="_blank">http://www.phpvim.net/wordpress/fanfou-tools.html</a>
@@ -55,12 +55,17 @@ $fanfou_notify_use_tinyurl = ($fanfou->notify_use_tinyurl == 1) ? ' checked="che
             <p>
                 <input type="checkbox" name="ff_notify_fanfou" id="ff_notify_fanfou" value="1" <?php echo $fanfou_notify_fanfou; ?> />
                 <?php echo _f('Create a fanfou status when you publish a new blog post?'); ?>
-            </p>
+			</p>
             <p>
                 <input type="checkbox" name="ff_notify_use_tinyurl" id="ff_notify_use_tinyurl" value="1" <?php echo $fanfou_notify_use_tinyurl; ?> />
                 <?php echo _f('Shorten the long permalink into a Tiny URL?'); ?>
                 <br/>
                 <em style="font:normal 10px verdana; color: gray;"><?php echo _f("Using this option will slow down your blog post action."); ?></em>
+            </p>
+			<p>
+				<?php echo _f('Exclude the following categories:');?>
+                <input type="text" name="ff_notify_exclude_categories" id="ff_notify_exclude_categories" value="<?php echo $fanfou->notify_exclude_categories; ?>" size="25" /><br/>
+				<em style="font:normal 10px verdana; color: gray;"><?php echo _f('List of IDs, separated by comma');?></em>
             </p>
             <p>
                 <?php echo _f('Format for notifier when publish a new blog post:'); ?>
@@ -89,7 +94,7 @@ $fanfou_notify_use_tinyurl = ($fanfou->notify_use_tinyurl == 1) ? ' checked="che
                 <?php echo _f('Select a locale:'); ?>
                 <select name="ff_locale">
 <?php
-$current_locale = get_option('fanfou_locale');
+    $current_locale = get_option('fanfou_locale');
 if (!$current_locale) {
     $current_locale = 'default';
 }

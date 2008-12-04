@@ -20,7 +20,7 @@ $current = (isset($_GET['tab']) and strlen($_GET['tab']) > 0) ? strtolower(trim(
 $index   = 0;
 foreach ($tabs as $tabkey => $tabname) {
     $class = ($current == $tabkey)  ? ' class="current"' : '';
-    $link  = "./admin.php?page=fanfou-tools.php&tab=$tabkey";
+    $link  = "./options-general.php?page=fanfou-tools.php&tab=$tabkey";
     $output = "<li><a {$class}href=\"$link\">$tabname</a>";
     if ($index < (count($tabs) - 1)) $output .= " |";
     $output .= "</li>\n";

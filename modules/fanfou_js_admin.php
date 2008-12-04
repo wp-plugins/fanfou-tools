@@ -7,7 +7,7 @@ function TestLogin()
     result.innerHTML = "<?php echo _f('Testing...')?>";
 
     var params = "fanfou_action=fanfou_login_test&ff_username=" + username + "&ff_password=" + password;
-    var myAjax = new Ajax.Updater(result, "<?php bloginfo('wpurl');?>/wp-admin/admin.php", {
+    var myAjax = new Ajax.Updater(result, "<?php bloginfo('wpurl');?>/wp-admin/options-general.php", {
         method: 'post',
         parameters: params,
         onComplete: function() { Fat.fade_element('fanfou_login_test_result') }

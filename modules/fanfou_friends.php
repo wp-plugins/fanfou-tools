@@ -20,7 +20,7 @@ foreach($friends as $friend) {
         <li>
         <a target="_blank" title="'.$friend->screen_name.'" href="'.$friend->url.'"><img alt="'.$friend->screen_name.'" src="'.$friend->profile_image_url.'" style="float: left; margin-right: 10px;"/></a>
         <a target="_blank" href="'.$friend->url.'">'.$friend->screen_name.'</a>
-        <p><a target="_blank" href="http://fanfou.com/friend.leave/'.$friend->id.'">取消关注</a> | <a href="'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=fanfou-tools.php&fanfou_action=fanfou_delete_friend&user_id='.$friend->id.'">刪除好友</a> | <a target="_blank" href="http://fanfou.com/privatemsg.create/'.$friend->id.'">发送私信</a></p>
+        <p><a target="_blank" href="http://fanfou.com/friend.leave/'.$friend->id.'">取消关注</a> | <a href="'.get_bloginfo('wpurl').'/wp-admin/options-general.php?page=fanfou-tools.php&fanfou_action=fanfou_delete_friend&user_id='.$friend->id.'">刪除好友</a> | <a target="_blank" href="http://fanfou.com/privatemsg.create/'.$friend->id.'">发送私信</a></p>
         </li>
         ';
 
