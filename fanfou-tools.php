@@ -231,6 +231,14 @@ function fanfou_notify_post($post_id = 0)
         return;
     }
 
+    // if time when created equals time when modified it is a new post
+    // otherwise the author has edited/modified it
+    $post = get_post($post_id);
+    if ($post->post_date != $post->post_modified) {
+        // if author modified or edited an old post, skip it
+        return;
+    }
+
     // skip some categories
     if ($fanfou->notify_exclude_categories) {
         $categories = get_the_category($post_id);
