@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `$fanfou` (
             // delete post from fanfou.com
             $this->init_snoopy();
             $url = "http://api.fanfou.com/statuses/destroy/$fanfou_id.xml";
-            if ($this->snoop->fetch($url)) {
+            if ($this->snoop->submit($url)) {
                 if (strpos($this->snoop->response_code, '200 OK')) {
                     update_option('fanfou_update_hash'  , '');
                     update_option('fanfou_last_download', strtotime('-8 minutes'));

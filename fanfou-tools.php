@@ -3,13 +3,13 @@
 Plugin Name: FanFou Tools
 Plugin URI: http://www.phpvim.net/wordpress/fanfou-tools.html
 Description: FanFou Tools for WordPress Blog...
-Version: 1.3.1
+Version: 1.3.2
 Author: Verdana Mu
 Author URI: http://www.phpvim.net
 License: LGPL
 **/
 
-define('FANFOU_TOOLS_VER', '1.3.1');
+define('FANFOU_TOOLS_VER', '1.3.2');
 define('FANFOU_PATH', ABSPATH . PLUGINDIR . '/fanfou-tools');
 
 require_once FANFOU_PATH . '/class-fanfou.php';

@@ -5,6 +5,10 @@ Fanfou Tools - ChangeLog
 $Id$
 $HeadURL$
 
+Changes with 1.3.2
+    * 消息列表页面加入一些文字说明
+    * 更新删除消息的提交方式（以前是GET，现在改为POST，否则无法删除)
+
 Changes with 1.3.1
 	* 用户编辑旧的帖子时，不再发送消息到饭否
 

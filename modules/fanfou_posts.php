@@ -10,6 +10,7 @@
 if (isset($_GET['fanfou_action']) and 'delete_post' == $_GET['fanfou_action']) {
     $id  = (isset($_GET['id']) and is_numeric($_GET['id'])) ? intval($_GET['id']) : 0;
     $fid = isset($_GET['fid']) ? trim($_GET['fid']) : '';
+
     if (!$id or !$fid) {
         wp_die(__('Unknown action.'));
         return;
@@ -36,6 +37,13 @@ $posts_columns = array(
 <div class="submit">
     <input type="button" value="<?php echo _f("Check latest");?>" onclick="location.href='./options-general.php?page=fanfou-tools.php&tab=posts&fanfou_action=update_posts'" />&nbsp;
     <input type="button" value="<?php echo _f("Synchronize");?>" onclick="location.href='./options-general.php?page=fanfou-tools.php&tab=posts&fanfou_action=synchronize_posts'" />
+
+    <br/>
+    <br/>
+    <em style="font:normal 10px verdana; color: gray;">
+        由于来自饭否的数据有一点点延迟，所以会出现删除消息后，本地仍然存在的情况，但饭否端的消息，确实已经删除了。
+        你只需要在几分钟后，点击一下本页的“同步”按钮，这些存在本地的垃圾消息就会被清理掉。
+    </em>
 </div>
 
 <br style="clear:both;" />
