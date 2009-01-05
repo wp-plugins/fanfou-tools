@@ -2,8 +2,8 @@
 Contributors: Verdana Mu
 Tags: blog, twitter, fanfou
 Requires at least: 2.1
-Tested up to: 2.7-hemorrhage
-Stable tag: 1.3
+Tested up to: 2.7
+Stable tag: 1.3.1
 
 The fanfou-tools plugin allow you to display a list of your fanfou status.
 
